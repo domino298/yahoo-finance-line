@@ -154,6 +154,11 @@ HTML = """<!doctype html>
     let currentPortfolioId = null;
     const els = {
       gate: document.querySelector("#gate"),
+
+      if __name__ == "__main__":
+          patch = "<style>.summary .metric:first-child{display:none}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}</style>"
+              INDEX_PATH.write_text(INDEX_PATH.read_text(encoding="utf-8").replace("</body>", patch + "</body>"), encoding="utf-8")
+              
       app: document.querySelector("#app"),
       password: document.querySelector("#password"),
       unlockButton: document.querySelector("#unlockButton"),
