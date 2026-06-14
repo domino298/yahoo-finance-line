@@ -40,6 +40,7 @@ HTML = """<!doctype html>
     header { border-bottom: 1px solid var(--line); background: var(--panel); }
     .wrap { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; }
     .topbar { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
     h1 { margin: 0; font-size: 22px; line-height: 1.25; }
     main { padding: 24px 0 40px; }
     .gate, .metric, .panel {
@@ -76,7 +77,7 @@ HTML = """<!doctype html>
       color: #fff;
       font-weight: 700;
     }
-    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
     .metric { padding: 16px; min-height: 86px; }
     .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
     .value { font-size: 24px; line-height: 1.1; font-weight: 700; }
@@ -97,10 +98,26 @@ HTML = """<!doctype html>
     .empty { padding: 32px 16px; color: var(--muted); text-align: center; display: none; }
     [hidden] { display: none !important; }
     @media (max-width: 780px) {
-      .topbar { align-items: flex-start; flex-direction: column; padding: 16px 0; }
+      .wrap { width: min(100vw - 16px, 1120px); }
+      .topbar { align-items: flex-start; flex-direction: column; padding: 16px 0; gap: 10px; }
+      .top-actions { width: 100%; justify-content: space-between; }
+      h1 { font-size: 20px; }
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .gate-row { flex-direction: column; }
-      table { min-width: 920px; }
+      .table-scroll { overflow-x: visible; }
+      table { min-width: 0; table-layout: fixed; }
+      th, td { padding: 10px 6px; font-size: 12px; line-height: 1.35; }
+      th:nth-child(1), td:nth-child(1),
+      th:nth-child(2), td:nth-child(2),
+      th:nth-child(7), td:nth-child(7) { display: none; }
+      th:nth-child(3), td:nth-child(3) { width: 42%; }
+      th:nth-child(4), td:nth-child(4) { width: 20%; }
+      th:nth-child(5), td:nth-child(5) { width: 18%; }
+      th:nth-child(6), td:nth-child(6) { width: 20%; }
+      td:nth-child(3) {
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+      }
     }
   </style>
 </head>
@@ -108,7 +125,10 @@ HTML = """<!doctype html>
   <header>
     <div class="wrap topbar">
       <h1>株価確認サイト</h1>
-      <div class="muted" id="statusText">パスワード未入力</div>
+      <div class="top-actions">
+        <button id="refreshButton" type="button" disabled>更新</button>
+        <div class="muted" id="statusText">パスワード未入力</div>
+      </div>
     </div>
   </header>
   <main class="wrap">
@@ -122,7 +142,6 @@ HTML = """<!doctype html>
     </section>
     <section id="app" hidden>
       <section class="summary">
-        <div class="metric"><div class="label">表示件数</div><div class="value" id="symbolCount">-</div></div>
         <div class="metric"><div class="label">5%以上上昇</div><div class="value" id="upCount">-</div></div>
         <div class="metric"><div class="label">5%以下下落</div><div class="value" id="downCount">-</div></div>
       </section>
@@ -154,17 +173,12 @@ HTML = """<!doctype html>
     let currentPortfolioId = null;
     const els = {
       gate: document.querySelector("#gate"),
-
-      if __name__ == "__main__":
-          patch = "<style>.summary .metric:first-child{display:none}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}</style>"
-              INDEX_PATH.write_text(INDEX_PATH.read_text(encoding="utf-8").replace("</body>", patch + "</body>"), encoding="utf-8")
-              
       app: document.querySelector("#app"),
       password: document.querySelector("#password"),
       unlockButton: document.querySelector("#unlockButton"),
       gateError: document.querySelector("#gateError"),
+      refreshButton: document.querySelector("#refreshButton"),
       statusText: document.querySelector("#statusText"),
-      symbolCount: document.querySelector("#symbolCount"),
       upCount: document.querySelector("#upCount"),
       downCount: document.querySelector("#downCount"),
       filterTabs: document.querySelector("#filterTabs"),
@@ -178,7 +192,7 @@ HTML = """<!doctype html>
       return Uint8Array.from(atob(text), (char) => char.charCodeAt(0));
     }
     async function decryptData(password) {
-      const encrypted = await fetch("encrypted-data.json", { cache: "no-store" }).then((res) => res.json());
+      const encrypted = await fetch(`encrypted-data.json?v=${Date.now()}`, { cache: "no-store" }).then((res) => res.json());
       const encoder = new TextEncoder();
       const baseKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]);
       const key = await crypto.subtle.deriveKey(
@@ -251,7 +265,6 @@ HTML = """<!doctype html>
     }
     function renderRows() {
       const items = selectedRows();
-      els.symbolCount.textContent = items.length;
       els.empty.style.display = items.length ? "none" : "block";
       if (currentFilter === "up") els.sourceText.textContent = "全ポートフォリオ / 5%以上上昇";
       else if (currentFilter === "down") els.sourceText.textContent = "全ポートフォリオ / 5%以下下落";
@@ -279,9 +292,125 @@ HTML = """<!doctype html>
       renderTabs();
       renderRows();
     }
+    function uniqueSymbols() {
+      const seen = new Set();
+      const symbols = [];
+      for (const portfolio of payload.portfolios || []) {
+        for (const item of portfolio.symbols || []) {
+          if (!item.symbol || seen.has(item.symbol)) continue;
+          seen.add(item.symbol);
+          symbols.push({ symbol: item.symbol, name: item.name });
+        }
+      }
+      return symbols;
+    }
+    function formatChange(value) {
+      const sign = value >= 0 ? "+" : "";
+      return `${sign}${yen.format(value)}`;
+    }
+    function formatRate(value) {
+      const sign = value >= 0 ? "+" : "";
+      return `${sign}${value.toFixed(2)}%`;
+    }
+    function alertDirection(item) {
+      if (typeof item.change_percent !== "number") return null;
+      const up = Number(item.up_threshold_percent ?? payload.default_up_threshold_percent);
+      const down = Number(item.down_threshold_percent ?? payload.default_down_threshold_percent);
+      if (item.change_percent >= up) return "up";
+      if (item.change_percent <= down) return "down";
+      return null;
+    }
+    async function fetchLiveQuote(symbol) {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5d&interval=1d&_=${Date.now()}`;
+      const data = await fetch(url, { cache: "no-store" }).then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      });
+      const result = data.chart?.result?.[0];
+      if (!result) throw new Error("データなし");
+      const meta = result.meta || {};
+      const closes = (result.indicators?.quote?.[0]?.close || []).filter((value) => value !== null && value !== undefined);
+      let price = meta.regularMarketPrice;
+      let previousClose = closes.length >= 2 ? closes[closes.length - 2] : (meta.previousClose || meta.chartPreviousClose);
+      if ((price === null || price === undefined) && closes.length) price = closes[closes.length - 1];
+      if (price === null || price === undefined || !previousClose) throw new Error("価格取得失敗");
+      price = Number(price);
+      previousClose = Number(previousClose);
+      const change = price - previousClose;
+      const changePercent = change / previousClose * 100;
+      return {
+        price,
+        previous_close: previousClose,
+        change,
+        change_text: formatChange(change),
+        rate: formatRate(changePercent),
+        change_percent: changePercent,
+        currency: meta.currency || ""
+      };
+    }
+    async function refreshLiveQuotes() {
+      const symbols = uniqueSymbols();
+      const quotes = new Map();
+      const batchSize = 8;
+      let done = 0;
+      for (let index = 0; index < symbols.length; index += batchSize) {
+        const batch = symbols.slice(index, index + batchSize);
+        await Promise.all(batch.map(async (item) => {
+          try {
+            quotes.set(item.symbol, await fetchLiveQuote(item.symbol));
+          } catch (error) {
+            quotes.set(item.symbol, { error: String(error).replace(/^Error: /, "") });
+          } finally {
+            done += 1;
+          }
+        }));
+        els.statusText.textContent = `Yahooから更新中: ${done}/${symbols.length}`;
+      }
+      for (const portfolio of payload.portfolios || []) {
+        for (const item of portfolio.symbols || []) {
+          const quote = quotes.get(item.symbol);
+          if (!quote) continue;
+          if (quote.error) {
+            item.error = quote.error;
+            continue;
+          }
+          item.price = quote.price;
+          item.previous_close = quote.previous_close;
+          item.change = quote.change_text;
+          item.rate = quote.rate;
+          item.change_percent = quote.change_percent;
+          item.currency = quote.currency || item.currency || "";
+          item.alert_direction = alertDirection(item);
+          item.error = "";
+        }
+      }
+      payload.generated_at = new Date().toISOString();
+    }
+    async function refreshData() {
+      if (!els.password.value) return;
+      const previousFilter = currentFilter;
+      const previousPortfolioId = currentPortfolioId;
+      els.refreshButton.disabled = true;
+      els.statusText.textContent = "更新中";
+      try {
+        await refreshLiveQuotes();
+        buildRows();
+        currentFilter = previousFilter || "portfolio";
+        currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
+          ? previousPortfolioId
+          : (payload.portfolios?.[0]?.id ?? null);
+        els.statusText.textContent = `リアルタイム更新: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
+        render();
+      } catch (error) {
+        els.statusText.textContent = "更新失敗";
+      } finally {
+        els.refreshButton.disabled = false;
+      }
+    }
     async function unlock() {
       els.unlockButton.disabled = true;
       els.gateError.hidden = true;
+      els.refreshButton.disabled = true;
       els.statusText.textContent = "確認中";
       try {
         payload = await decryptData(els.password.value);
@@ -289,6 +418,7 @@ HTML = """<!doctype html>
         currentPortfolioId = payload.portfolios?.[0]?.id ?? null;
         els.gate.hidden = true;
         els.app.hidden = false;
+        els.refreshButton.disabled = false;
         els.statusText.textContent = `最終更新: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
         render();
       } catch (error) {
@@ -299,6 +429,7 @@ HTML = """<!doctype html>
       }
     }
     els.unlockButton.addEventListener("click", unlock);
+    els.refreshButton.addEventListener("click", refreshData);
     els.password.addEventListener("keydown", (event) => { if (event.key === "Enter") unlock(); });
   </script>
 </body>
