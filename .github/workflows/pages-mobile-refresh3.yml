@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
   group: pages
@@ -221,6 +222,32 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
+
+      - name: Disable old dashboard workflows
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          for workflow in \
+            pages.yml \
+            pages-auto-repair.yml \
+            pages-chartfix.yml \
+            pages-mobile-refresh.yml \
+            pages-mobile-refresh2.yml \
+            pages-nocount.yml \
+            pages-nocount2.yml \
+            pages-ratefix.yml \
+            pages-ratefix2.yml \
+            pages-ratefix-fast.yml \
+            pages-repair.yml
+          do
+            curl -fsS -X PUT \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/actions/workflows/$workflow/disable" || true
+          done
 
   deploy:
     environment:
