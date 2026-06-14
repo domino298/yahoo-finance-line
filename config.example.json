@@ -1,0 +1,24 @@
+{
+  "default_up_threshold_percent": 5.0,
+  "default_down_threshold_percent": -5.0,
+  "check_interval_seconds": 900,
+  "quote_delay_seconds": 1.0,
+  "quote_batch_size": 5,
+  "quote_batch_delay_ms": 2500,
+  "cooldown_hours": 24,
+  "state_file": "state.json",
+  "symbol_source": "excel",
+  "symbol_source_file": "outputs/yahoo_finance_portfolio_backup.xlsx",
+  "symbols": [
+    {
+      "symbol": "7203.T",
+      "name": "トヨタ自動車"
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple",
+      "up_threshold_percent": 2.5,
+      "down_threshold_percent": -2.5
+    }
+  ]
+}
