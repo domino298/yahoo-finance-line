@@ -539,3 +539,42 @@
 
 
 </script>
+
+
+<script>
+  (function(){
+      function dt(v){try{return new Date(v||Date.now()).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});}catch(e){return new Date().toLocaleString('ja-JP');}}
+      function orderedSymbols(){var seen={},out=[];function add(x){if(x&&x.symbol&&!seen[x.symbol]){seen[x.symbol]=1;out.push({symbol:x.symbol,name:x.name||''});}}try{selectedRows().forEach(add);}catch(e){}try{uniqueSymbols().forEach(add);}catch(e){}return out;}
+      function jsonp(url,params,ms){return new Promise(function(resolve,reject){var cb='yf_live_'+Date.now()+'_'+Math.floor(Math.random()*100000);var script=document.createElement('script');var done=false;function cleanup(){if(done)return;done=true;clearTimeout(timer);try{delete window[cb];}catch(e){window[cb]=undefined;}script.remove();}var timer=setTimeout(function(){cleanup();reject(new Error('timeout'));},ms||20000);window[cb]=function(data){cleanup();resolve(data||{});};var search=new URLSearchParams(Object.assign({},params,{callback:cb,t:String(Date.now())}));script.src=LIVE_PROXY_URL+'?'+search.toString();script.onerror=function(){cleanup();reject(new Error('network'));};document.head.appendChild(script);});}
+      var running=false;
+      async function robustRefresh(){
+            if(running||!els.password.value||!payload)return;
+            running=true;els.refreshButton.disabled=true;
+            var symbols=orderedSymbols(),total=symbols.length,done=0,success=0,failed=0,newest='',batchSize=20;
+            els.statusText.textContent='\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u66f4\u65b0\u4e2d / \u53d6\u5f97\u958b\u59cb: '+dt();
+            try{
+                    for(var i=0;i<symbols.length;i+=batchSize){
+                              var batch=symbols.slice(i,i+batchSize);
+                              try{
+                                          var data=await jsonp(LIVE_PROXY_URL,{symbols:batch.map(function(x){return x.symbol;}).join(',')},25000);
+                                          batch.forEach(function(sym){var q=(data.quotes&&data.quotes[sym.symbol])||{error:'no data'};if(q.error){failed++;return;}var ch=Number(q.change),cp=Number(q.change_percent);if(!isFinite(cp)&&q.price&&q.previous_close){cp=(Number(q.price)-Number(q.previous_close))/Number(q.previous_close)*100;ch=Number(q.price)-Number(q.previous_close);}q.change_text=formatChange(ch);q.rate=formatRate(cp);q.change_percent=cp;if(q.quote_time&&(!newest||new Date(q.quote_time)>new Date(newest)))newest=q.quote_time;success++;(payload.portfolios||[]).forEach(function(p){(p.symbols||[]).forEach(function(item){if(item.symbol===sym.symbol){item.price=q.price;item.previous_close=q.previous_close;item.change=q.change_text;item.rate=q.rate;item.change_percent=q.change_percent;item.currency=q.currency||item.currency||'';item.quote_time=q.quote_time||'';item.market_state=q.market_state||'';item.alert_direction=alertDirection(item);item.error='';}});});});
+                              }catch(e){failed+=batch.length;}
+                              done+=batch.length;payload.generated_at=new Date().toISOString();payload.quote_time=newest||payload.generated_at;buildRows();render();els.statusText.textContent='\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u53d6\u5f97\u4e2d: '+Math.min(done,total)+'/'+total+' / OK '+success+' / \u5931\u6557 '+failed+' / \u53d6\u5f97: '+dt(payload.generated_at);
+                    }
+            }finally{
+                    payload.generated_at=new Date().toISOString();payload.quote_time=newest||payload.generated_at;buildRows();render();els.statusText.textContent='\u682a\u4fa1\u6642\u70b9: '+dt(payload.quote_time)+' / \u53d6\u5f97: '+dt(payload.generated_at)+' / OK '+success+'/'+total+(failed?' / \u5931\u6557 '+failed:'');els.refreshButton.disabled=false;running=false;
+            }
+      }
+      function install(){
+            if(!els||!els.refreshButton||els.refreshButton.dataset.liveFixed==='1')return;
+            var old=els.refreshButton, fresh=old.cloneNode(true);fresh.dataset.liveFixed='1';old.replaceWith(fresh);els.refreshButton=fresh;fresh.addEventListener('click',robustRefresh);
+      }
+      install();
+      var u=document.getElementById('unlockButton'),p=document.getElementById('password');
+      function kick(){setTimeout(function(){install();if(!document.getElementById('app').hidden)robustRefresh();},1200);}
+      if(u)u.addEventListener('click',kick);if(p)p.addEventListener('keydown',function(e){if(e.key==='Enter')kick();});
+      setInterval(function(){install();var app=document.getElementById('app'),row=document.querySelector('#rows tr');if(app&&!app.hidden&&row&&row.innerText.indexOf('\t-\t-\t-')>-1&&!running)robustRefresh();},5000);
+  })();
+</script>
+
+</script>
