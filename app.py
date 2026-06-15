@@ -151,7 +151,13 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
 
 
 def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
-    params = urllib.parse.urlencode({"range": "5d", "interval": "1d"})
+    if symbol.endswith(".T"):
+        try:
+            return fetch_quote_from_yahoo_japan(symbol, name)
+        except Exception:
+            pass
+
+    params = urllib.parse.urlencode({"range": "1d", "interval": "1m", "includePrePost": "false"})
     url = f"{YAHOO_CHART_URL.format(symbol=urllib.parse.quote(symbol))}?{params}"
     payload = request_json(url)
 
