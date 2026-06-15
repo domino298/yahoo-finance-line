@@ -171,6 +171,7 @@ HTML = """<!doctype html>
     let rows = [];
     let currentFilter = "portfolio";
     let currentPortfolioId = null;
+    const LIVE_PROXY_URL = "https://script.google.com/macros/s/AKfycbyy0_1l7yyb_OGl3yvRO5cVow5fueYN92QPUKnIT7RUycFQUYF-OTTy0QOp_uSQ-J0TOA/exec";
     const els = {
       gate: document.querySelector("#gate"),
       app: document.querySelector("#app"),
@@ -320,53 +321,56 @@ HTML = """<!doctype html>
       if (item.change_percent <= down) return "down";
       return null;
     }
-    async function fetchLiveQuote(symbol) {
-      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5d&interval=1d&_=${Date.now()}`;
-      const data = await fetch(url, { cache: "no-store" }).then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+    function fetchJsonp(url, params) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `liveQuotes_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement("script");
+        const timeout = window.setTimeout(() => {
+          cleanup();
+          reject(new Error("中継タイムアウト"));
+        }, 45000);
+        function cleanup() {
+          window.clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+        }
+        window[callbackName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+        const search = new URLSearchParams({ ...params, callback: callbackName, t: String(Date.now()) });
+        script.src = `${url}?${search.toString()}`;
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("中継に接続できません"));
+        };
+        document.head.appendChild(script);
       });
-      const result = data.chart?.result?.[0];
-      if (!result) throw new Error("データなし");
-      const meta = result.meta || {};
-      const closes = (result.indicators?.quote?.[0]?.close || []).filter((value) => value !== null && value !== undefined);
-      let price = meta.regularMarketPrice;
-      let previousClose = closes.length >= 2 ? closes[closes.length - 2] : (meta.previousClose || meta.chartPreviousClose);
-      if ((price === null || price === undefined) && closes.length) price = closes[closes.length - 1];
-      if (price === null || price === undefined || !previousClose) throw new Error("価格取得失敗");
-      price = Number(price);
-      previousClose = Number(previousClose);
-      const change = price - previousClose;
-      const changePercent = change / previousClose * 100;
-      return {
-        price,
-        previous_close: previousClose,
-        change,
-        change_text: formatChange(change),
-        rate: formatRate(changePercent),
-        change_percent: changePercent,
-        currency: meta.currency || ""
-      };
     }
     async function refreshLiveQuotes() {
+      if (!LIVE_PROXY_URL) throw new Error("リアルタイム中継未設定");
       const symbols = uniqueSymbols();
       const quotes = new Map();
-      const batchSize = 8;
+      const batchSize = 80;
       let done = 0;
       let success = 0;
       for (let index = 0; index < symbols.length; index += batchSize) {
         const batch = symbols.slice(index, index + batchSize);
-        await Promise.all(batch.map(async (item) => {
-          try {
-            quotes.set(item.symbol, await fetchLiveQuote(item.symbol));
+        const data = await fetchJsonp(LIVE_PROXY_URL, { symbols: batch.map((item) => item.symbol).join(",") });
+        for (const item of batch) {
+          const quote = data.quotes?.[item.symbol] || { error: "取得失敗" };
+          if (!quote.error) {
+            const change = Number(quote.change);
+            const changePercent = Number(quote.change_percent);
+            quote.change_text = formatChange(change);
+            quote.rate = formatRate(changePercent);
+            quote.change_percent = changePercent;
             success += 1;
-          } catch (error) {
-            quotes.set(item.symbol, { error: String(error).replace(/^Error: /, "") });
-          } finally {
-            done += 1;
           }
-        }));
-        els.statusText.textContent = `Yahooから更新中: ${done}/${symbols.length}`;
+          quotes.set(item.symbol, quote);
+        }
+        done += batch.length;
+        els.statusText.textContent = `リアルタイム取得中: ${done}/${symbols.length}`;
       }
       for (const portfolio of payload.portfolios || []) {
         for (const item of portfolio.symbols || []) {
@@ -394,11 +398,11 @@ HTML = """<!doctype html>
       const previousFilter = currentFilter;
       const previousPortfolioId = currentPortfolioId;
       els.refreshButton.disabled = true;
-      els.statusText.textContent = "更新中";
+      els.statusText.textContent = LIVE_PROXY_URL ? "リアルタイム更新中" : "公開済み最新データを確認中";
       try {
         const liveResult = await refreshLiveQuotes();
         if (liveResult.success < Math.max(1, Math.ceil(liveResult.total * 0.5))) {
-          throw new Error(`Yahoo直接取得失敗: ${liveResult.success}/${liveResult.total}`);
+          throw new Error(`リアルタイム取得失敗: ${liveResult.success}/${liveResult.total}`);
         }
         buildRows();
         currentFilter = previousFilter || "portfolio";
@@ -415,7 +419,9 @@ HTML = """<!doctype html>
           currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
             ? previousPortfolioId
             : (payload.portfolios?.[0]?.id ?? null);
-          els.statusText.textContent = `Yahoo直接取得不可 / 公開済み最新: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
+          els.statusText.textContent = LIVE_PROXY_URL
+            ? `リアルタイム取得失敗 / 5分自動更新データ: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`
+            : `5分自動更新データ: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
           render();
         } catch (fallbackError) {
           els.statusText.textContent = "更新失敗";
