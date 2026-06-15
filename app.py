@@ -132,7 +132,7 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
             break
 
     change_text = lines[change_index + 1] if change_index + 1 < len(lines) else ""
-    match = re.search(r"([+\\-−]?[0-9,]+(?:\\.[0-9]+)?)\\s*\\(([+\\-−]?[0-9.]+)%\\)", change_text)
+    match = re.search(r"([+\-−]?[0-9,]+(?:\.[0-9]+)?)\s*\(([+\-−]?[0-9.]+)%\)", change_text)
     if price is None or not match:
         raise RuntimeError(f"Missing Yahoo Japan price data for {symbol}")
 
@@ -152,10 +152,7 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
 
 def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
     if symbol.endswith(".T"):
-        try:
-            return fetch_quote_from_yahoo_japan(symbol, name)
-        except Exception:
-            pass
+        return fetch_quote_from_yahoo_japan(symbol, name)
 
     params = urllib.parse.urlencode({"range": "1d", "interval": "1m", "includePrePost": "false"})
     url = f"{YAHOO_CHART_URL.format(symbol=urllib.parse.quote(symbol))}?{params}"
@@ -187,8 +184,6 @@ def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
         previous_close = closes[-2]
 
     if price is None or previous_close in (None, 0):
-        if symbol.endswith(".T"):
-            return fetch_quote_from_yahoo_japan(symbol, name)
         raise RuntimeError(f"Missing price data for {symbol}")
 
     change_percent = (float(price) - float(previous_close)) / float(previous_close) * 100
