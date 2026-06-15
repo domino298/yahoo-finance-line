@@ -29,6 +29,7 @@
     header { border-bottom: 1px solid var(--line); background: var(--panel); }
     .wrap { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; }
     .topbar { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
     h1 { margin: 0; font-size: 22px; line-height: 1.25; }
     main { padding: 24px 0 40px; }
     .gate, .metric, .panel {
@@ -65,7 +66,7 @@
       color: #fff;
       font-weight: 700;
     }
-    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
     .metric { padding: 16px; min-height: 86px; }
     .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
     .value { font-size: 24px; line-height: 1.1; font-weight: 700; }
@@ -86,10 +87,26 @@
     .empty { padding: 32px 16px; color: var(--muted); text-align: center; display: none; }
     [hidden] { display: none !important; }
     @media (max-width: 780px) {
-      .topbar { align-items: flex-start; flex-direction: column; padding: 16px 0; }
+      .wrap { width: min(100vw - 16px, 1120px); }
+      .topbar { align-items: flex-start; flex-direction: column; padding: 16px 0; gap: 10px; }
+      .top-actions { width: 100%; justify-content: space-between; }
+      h1 { font-size: 20px; }
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .gate-row { flex-direction: column; }
-      table { min-width: 920px; }
+      .table-scroll { overflow-x: visible; }
+      table { min-width: 0; table-layout: fixed; }
+      th, td { padding: 10px 6px; font-size: 12px; line-height: 1.35; }
+      th:nth-child(1), td:nth-child(1),
+      th:nth-child(2), td:nth-child(2),
+      th:nth-child(7), td:nth-child(7) { display: none; }
+      th:nth-child(3), td:nth-child(3) { width: 42%; }
+      th:nth-child(4), td:nth-child(4) { width: 20%; }
+      th:nth-child(5), td:nth-child(5) { width: 18%; }
+      th:nth-child(6), td:nth-child(6) { width: 20%; }
+      td:nth-child(3) {
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+      }
     }
   </style>
 </head>
@@ -97,7 +114,10 @@
   <header>
     <div class="wrap topbar">
       <h1>株価確認サイト</h1>
-      <div class="muted" id="statusText">パスワード未入力</div>
+      <div class="top-actions">
+        <button id="refreshButton" type="button" disabled>更新</button>
+        <div class="muted" id="statusText">パスワード未入力</div>
+      </div>
     </div>
   </header>
   <main class="wrap">
@@ -111,7 +131,6 @@
     </section>
     <section id="app" hidden>
       <section class="summary">
-        <div class="metric"><div class="label">表示件数</div><div class="value" id="symbolCount">-</div></div>
         <div class="metric"><div class="label">5%以上上昇</div><div class="value" id="upCount">-</div></div>
         <div class="metric"><div class="label">5%以下下落</div><div class="value" id="downCount">-</div></div>
       </section>
@@ -141,15 +160,15 @@
     let rows = [];
     let currentFilter = "portfolio";
     let currentPortfolioId = null;
+    const LIVE_PROXY_URL = "https://script.google.com/macros/s/AKfycbyy0_1l7yyb_OGl3yvRO5cVow5fueYN92QPUKnIT7RUycFQUYF-OTTy0QOp_uSQ-J0TOA/exec";
     const els = {
       gate: document.querySelector("#gate"),
-      <style>.summary .metric:first-child{display:none}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}</style>
       app: document.querySelector("#app"),
       password: document.querySelector("#password"),
       unlockButton: document.querySelector("#unlockButton"),
       gateError: document.querySelector("#gateError"),
+      refreshButton: document.querySelector("#refreshButton"),
       statusText: document.querySelector("#statusText"),
-      symbolCount: document.querySelector("#symbolCount"),
       upCount: document.querySelector("#upCount"),
       downCount: document.querySelector("#downCount"),
       filterTabs: document.querySelector("#filterTabs"),
@@ -163,7 +182,7 @@
       return Uint8Array.from(atob(text), (char) => char.charCodeAt(0));
     }
     async function decryptData(password) {
-      const encrypted = await fetch("encrypted-data.json", { cache: "no-store" }).then((res) => res.json());
+      const encrypted = await fetch(`encrypted-data.json?v=${Date.now()}`, { cache: "no-store" }).then((res) => res.json());
       const encoder = new TextEncoder();
       const baseKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]);
       const key = await crypto.subtle.deriveKey(
@@ -236,7 +255,6 @@
     }
     function renderRows() {
       const items = selectedRows();
-      els.symbolCount.textContent = items.length;
       els.empty.style.display = items.length ? "none" : "block";
       if (currentFilter === "up") els.sourceText.textContent = "全ポートフォリオ / 5%以上上昇";
       else if (currentFilter === "down") els.sourceText.textContent = "全ポートフォリオ / 5%以下下落";
@@ -264,9 +282,160 @@
       renderTabs();
       renderRows();
     }
+    function uniqueSymbols() {
+      const seen = new Set();
+      const symbols = [];
+      for (const portfolio of payload.portfolios || []) {
+        for (const item of portfolio.symbols || []) {
+          if (!item.symbol || seen.has(item.symbol)) continue;
+          seen.add(item.symbol);
+          symbols.push({ symbol: item.symbol, name: item.name });
+        }
+      }
+      return symbols;
+    }
+    function formatChange(value) {
+      const sign = value >= 0 ? "+" : "";
+      return `${sign}${yen.format(value)}`;
+    }
+    function formatRate(value) {
+      const sign = value >= 0 ? "+" : "";
+      return `${sign}${value.toFixed(2)}%`;
+    }
+    function formatDateTime(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
+    }
+    function alertDirection(item) {
+      if (typeof item.change_percent !== "number") return null;
+      const up = Number(item.up_threshold_percent ?? payload.default_up_threshold_percent);
+      const down = Number(item.down_threshold_percent ?? payload.default_down_threshold_percent);
+      if (item.change_percent >= up) return "up";
+      if (item.change_percent <= down) return "down";
+      return null;
+    }
+    function fetchJsonp(url, params) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `liveQuotes_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement("script");
+        const timeout = window.setTimeout(() => {
+          cleanup();
+          reject(new Error("中継タイムアウト"));
+        }, 45000);
+        function cleanup() {
+          window.clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+        }
+        window[callbackName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+        const search = new URLSearchParams({ ...params, callback: callbackName, t: String(Date.now()) });
+        script.src = `${url}?${search.toString()}`;
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("中継に接続できません"));
+        };
+        document.head.appendChild(script);
+      });
+    }
+    async function refreshLiveQuotes() {
+      if (!LIVE_PROXY_URL) throw new Error("リアルタイム中継未設定");
+      const symbols = uniqueSymbols();
+      const quotes = new Map();
+      const batchSize = 80;
+      let done = 0;
+      let success = 0;
+      let newestQuoteTime = "";
+      for (let index = 0; index < symbols.length; index += batchSize) {
+        const batch = symbols.slice(index, index + batchSize);
+        const data = await fetchJsonp(LIVE_PROXY_URL, { symbols: batch.map((item) => item.symbol).join(",") });
+        for (const item of batch) {
+          const quote = data.quotes?.[item.symbol] || { error: "取得失敗" };
+          if (!quote.error) {
+            const change = Number(quote.change);
+            const changePercent = Number(quote.change_percent);
+            quote.change_text = formatChange(change);
+            quote.rate = formatRate(changePercent);
+            quote.change_percent = changePercent;
+            if (quote.quote_time && (!newestQuoteTime || new Date(quote.quote_time) > new Date(newestQuoteTime))) {
+              newestQuoteTime = quote.quote_time;
+            }
+            success += 1;
+          }
+          quotes.set(item.symbol, quote);
+        }
+        done += batch.length;
+        els.statusText.textContent = `リアルタイム取得中: ${done}/${symbols.length}`;
+      }
+      for (const portfolio of payload.portfolios || []) {
+        for (const item of portfolio.symbols || []) {
+          const quote = quotes.get(item.symbol);
+          if (!quote) continue;
+          if (quote.error) {
+            item.error = quote.error;
+            continue;
+          }
+          item.price = quote.price;
+          item.previous_close = quote.previous_close;
+          item.change = quote.change_text;
+          item.rate = quote.rate;
+          item.change_percent = quote.change_percent;
+          item.currency = quote.currency || item.currency || "";
+          item.quote_time = quote.quote_time || "";
+          item.market_state = quote.market_state || "";
+          item.alert_direction = alertDirection(item);
+          item.error = "";
+        }
+      }
+      payload.generated_at = new Date().toISOString();
+      payload.quote_time = newestQuoteTime || payload.generated_at;
+      return { success, total: symbols.length, quote_time: payload.quote_time };
+    }
+    async function refreshData() {
+      if (!els.password.value) return;
+      const previousFilter = currentFilter;
+      const previousPortfolioId = currentPortfolioId;
+      els.refreshButton.disabled = true;
+      els.statusText.textContent = LIVE_PROXY_URL ? "リアルタイム更新中" : "公開済み最新データを確認中";
+      try {
+        const liveResult = await refreshLiveQuotes();
+        if (liveResult.success < Math.max(1, Math.ceil(liveResult.total * 0.5))) {
+          throw new Error(`リアルタイム取得失敗: ${liveResult.success}/${liveResult.total}`);
+        }
+        buildRows();
+        currentFilter = previousFilter || "portfolio";
+        currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
+          ? previousPortfolioId
+          : (payload.portfolios?.[0]?.id ?? null);
+        els.statusText.textContent = `株価時点: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 取得: ${formatDateTime(payload.generated_at)}`;
+        render();
+      } catch (error) {
+        try {
+          payload = await decryptData(els.password.value);
+          buildRows();
+          currentFilter = previousFilter || "portfolio";
+          currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
+            ? previousPortfolioId
+            : (payload.portfolios?.[0]?.id ?? null);
+          els.statusText.textContent = LIVE_PROXY_URL
+            ? `リアルタイム取得失敗 / 公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`
+            : `公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
+          render();
+        } catch (fallbackError) {
+          els.statusText.textContent = "更新失敗";
+        }
+      } finally {
+        els.refreshButton.disabled = false;
+      }
+    }
     async function unlock() {
       els.unlockButton.disabled = true;
       els.gateError.hidden = true;
+      els.refreshButton.disabled = true;
       els.statusText.textContent = "確認中";
       try {
         payload = await decryptData(els.password.value);
@@ -274,7 +443,8 @@
         currentPortfolioId = payload.portfolios?.[0]?.id ?? null;
         els.gate.hidden = true;
         els.app.hidden = false;
-        els.statusText.textContent = `最終更新: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
+        els.refreshButton.disabled = false;
+        els.statusText.textContent = `株価時点: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
         render();
       } catch (error) {
         els.gateError.hidden = false;
@@ -284,6 +454,7 @@
       }
     }
     els.unlockButton.addEventListener("click", unlock);
+    els.refreshButton.addEventListener("click", refreshData);
     els.password.addEventListener("keydown", (event) => { if (event.key === "Enter") unlock(); });
   </script>
 </body>
