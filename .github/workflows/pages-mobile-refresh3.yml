@@ -1,4 +1,5 @@
-ame: Build encrypted stock dashboard mobile refresh 3
+
+name: Build encrypted stock dashboard mobile refresh 3
 "on": {"workflow_dispatch":{},"schedule":[{"cron":"*/5 0-8 * * 1-5"}]}
 permissions: {"contents":"read","pages":"write","id-token":"write"}
 concurrency: {"group":"pages","cancel-in-progress":false}
