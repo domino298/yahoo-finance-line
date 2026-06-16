@@ -319,6 +319,28 @@ HTML = """<!doctype html>
       const sign = value >= 0 ? "+" : "";
       return `${sign}${value.toFixed(2)}%`;
     }
+    function normalizeQuote(quote) {
+      const price = Number(quote.price);
+      const previousClose = Number(quote.previous_close);
+      if (!Number.isFinite(price) || !Number.isFinite(previousClose) || previousClose === 0) {
+        throw new Error("価格または前日終値が不正です");
+      }
+      const change = price - previousClose;
+      const calculatedPercent = change / previousClose * 100;
+      const sourcePercent = Number(quote.change_percent);
+      const changePercent = Number.isFinite(sourcePercent) && Math.abs(sourcePercent - calculatedPercent) < 0.05
+        ? sourcePercent
+        : calculatedPercent;
+      return {
+        ...quote,
+        price,
+        previous_close: previousClose,
+        change,
+        change_percent: changePercent,
+        change_text: formatChange(change),
+        rate: formatRate(changePercent)
+      };
+    }
     function formatDateTime(value) {
       if (!value) return "";
       const date = new Date(value);
@@ -377,13 +399,15 @@ HTML = """<!doctype html>
           data = { quotes: {} };
         }
         for (const item of batch) {
-          const quote = data.quotes?.[item.symbol] || { error: "取得失敗" };
+          let quote = data.quotes?.[item.symbol] || { error: "取得失敗" };
           if (!quote.error) {
-            const change = Number(quote.change);
-            const changePercent = Number(quote.change_percent);
-            quote.change_text = formatChange(change);
-            quote.rate = formatRate(changePercent);
-            quote.change_percent = changePercent;
+            try {
+              quote = normalizeQuote(quote);
+            } catch (error) {
+              quote = { error: error.message || "計算失敗" };
+            }
+          }
+          if (!quote.error) {
             if (quote.quote_time && (!newestQuoteTime || new Date(quote.quote_time) > new Date(newestQuoteTime))) {
               newestQuoteTime = quote.quote_time;
             }
