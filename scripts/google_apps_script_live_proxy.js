@@ -59,14 +59,14 @@ function doGet(e) {
 function fetchQuote(symbol) {
   if (/\.T$/.test(symbol)) {
     try {
-      return fetchQuoteFromYahooJapan(symbol);
-    } catch (error) {
-      // Yahoo!ファイナンス日本版を優先し、取れない時だけチャートAPIに戻します。
-    }
-    try {
       return fetchQuoteFromQuoteApi(symbol);
     } catch (error) {
-      // quote APIも取れない時は日足で最後に確認します。
+      // 軽いquote APIで取れない時だけYahoo!ファイナンス日本版を読みます。
+    }
+    try {
+      return fetchQuoteFromYahooJapan(symbol);
+    } catch (error) {
+      // Yahoo!ファイナンス日本版も取れない時は日足で最後に確認します。
     }
     return fetchQuoteFromDailyChart(symbol);
   }
