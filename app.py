@@ -346,15 +346,15 @@ def format_market_time(timestamp: Optional[int]) -> str:
 
 
 def format_alert(alert: Alert) -> str:
-    direction_label = "Price up" if alert.direction == "up" else "Price down"
+    direction_label = "値上がり通知" if alert.direction == "up" else "値下がり通知"
     sign = "+" if alert.change_percent >= 0 else ""
     return "\n".join(
         [
-            f"{direction_label} alert: {alert.name} ({alert.symbol})",
-            f"Change: {sign}{alert.change_percent:.2f}% / threshold: {alert.threshold_percent:.2f}%",
-            f"Price: {alert.price:,.2f} {alert.currency}".rstrip(),
-            f"Previous close: {alert.previous_close:,.2f} {alert.currency}".rstrip(),
-            f"Quote time: {format_market_time(alert.market_time)}",
+            f"{direction_label}: {alert.name} ({alert.symbol})",
+            f"騰落率: {sign}{alert.change_percent:.2f}% / 基準: {alert.threshold_percent:.2f}%",
+            f"現在値: {alert.price:,.2f} {alert.currency}".rstrip(),
+            f"前日終値: {alert.previous_close:,.2f} {alert.currency}".rstrip(),
+            f"株価時点: {format_market_time(alert.market_time)}",
         ]
     )
 
