@@ -426,6 +426,12 @@ HTML = """<!doctype html>
           if (!quote) continue;
           if (quote.error) {
             item.error = quote.error;
+            item.price = "";
+            item.previous_close = "";
+            item.change = "";
+            item.rate = "";
+            item.change_percent = null;
+            item.alert_direction = null;
             continue;
           }
           item.price = quote.price;
