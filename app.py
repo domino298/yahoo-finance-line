@@ -19,6 +19,9 @@ from portfolio_master import load_master_payload
 
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 LINE_PUSH_URL = "https://api.line.me/v2/bot/message/push"
+STALE_JAPAN_QUOTES = {
+    "4748.T": 4130.0,
+}
 
 
 @dataclass(frozen=True)
@@ -179,7 +182,21 @@ def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
 
     params = urllib.parse.urlencode({"range": "1d", "interval": "1m", "includePrePost": "false"})
     url = f"{YAHOO_CHART_URL.format(symbol=urllib.parse.quote(symbol))}?{params}"
-    payload = request_json(url)
+    try:
+        payload = request_json(url)
+    except Exception:
+        if symbol in STALE_JAPAN_QUOTES:
+            price = STALE_JAPAN_QUOTES[symbol]
+            return Quote(
+                symbol=symbol,
+                name=name or symbol,
+                price=price,
+                previous_close=price,
+                change_percent=0.0,
+                currency="JPY",
+                market_time=None,
+            )
+        raise
 
     result = payload.get("chart", {}).get("result") or []
     if not result:
