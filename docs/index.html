@@ -352,13 +352,19 @@
       if (!LIVE_PROXY_URL) throw new Error("リアルタイム中継未設定");
       const symbols = uniqueSymbols();
       const quotes = new Map();
-      const batchSize = 80;
+      const batchSize = 20;
       let done = 0;
       let success = 0;
+      let failed = 0;
       let newestQuoteTime = "";
       for (let index = 0; index < symbols.length; index += batchSize) {
         const batch = symbols.slice(index, index + batchSize);
-        const data = await fetchJsonp(LIVE_PROXY_URL, { symbols: batch.map((item) => item.symbol).join(",") });
+        let data = null;
+        try {
+          data = await fetchJsonp(LIVE_PROXY_URL, { symbols: batch.map((item) => item.symbol).join(",") });
+        } catch (error) {
+          data = { quotes: {} };
+        }
         for (const item of batch) {
           const quote = data.quotes?.[item.symbol] || { error: "取得失敗" };
           if (!quote.error) {
@@ -371,11 +377,13 @@
               newestQuoteTime = quote.quote_time;
             }
             success += 1;
+          } else {
+            failed += 1;
           }
           quotes.set(item.symbol, quote);
         }
         done += batch.length;
-        els.statusText.textContent = `リアルタイム取得中: ${done}/${symbols.length}`;
+        els.statusText.textContent = `リアルタイム取得中: ${done}/${symbols.length} / OK ${success} / 失敗 ${failed}`;
       }
       for (const portfolio of payload.portfolios || []) {
         for (const item of portfolio.symbols || []) {
@@ -399,7 +407,7 @@
       }
       payload.generated_at = new Date().toISOString();
       payload.quote_time = newestQuoteTime || payload.generated_at;
-      return { success, total: symbols.length, quote_time: payload.quote_time };
+      return { success, failed, total: symbols.length, quote_time: payload.quote_time };
     }
     async function refreshData() {
       if (!els.password.value) return;
@@ -409,7 +417,7 @@
       els.statusText.textContent = LIVE_PROXY_URL ? "リアルタイム更新中" : "公開済み最新データを確認中";
       try {
         const liveResult = await refreshLiveQuotes();
-        if (liveResult.success < Math.max(1, Math.ceil(liveResult.total * 0.5))) {
+        if (liveResult.success < 1) {
           throw new Error(`リアルタイム取得失敗: ${liveResult.success}/${liveResult.total}`);
         }
         buildRows();
@@ -417,7 +425,7 @@
         currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
           ? previousPortfolioId
           : (payload.portfolios?.[0]?.id ?? null);
-        els.statusText.textContent = `株価時点: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 取得: ${formatDateTime(payload.generated_at)}`;
+        els.statusText.textContent = `株価時点: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 更新: ${formatDateTime(payload.generated_at)} / OK ${liveResult.success} / 失敗 ${liveResult.failed}`;
         render();
       } catch (error) {
         try {
