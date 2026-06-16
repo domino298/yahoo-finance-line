@@ -63,6 +63,11 @@ function fetchQuote(symbol) {
     } catch (error) {
       // Yahoo!ファイナンス日本版を優先し、取れない時だけチャートAPIに戻します。
     }
+    try {
+      return fetchQuoteFromQuoteApi(symbol);
+    } catch (error) {
+      // quote APIも取れない時は日足で最後に確認します。
+    }
     return fetchQuoteFromDailyChart(symbol);
   }
   return fetchQuoteFromChart(symbol);
@@ -152,6 +157,35 @@ function fetchQuoteFromChart(symbol) {
   return quoteResult(price, previousClose, null, meta.currency || "", quoteTime, meta.marketState || "");
 }
 
+function fetchQuoteFromQuoteApi(symbol) {
+  const url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=" + encodeURIComponent(symbol);
+  const response = UrlFetchApp.fetch(url, {
+    muteHttpExceptions: true,
+    headers: { "User-Agent": "Mozilla/5.0" },
+  });
+  if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+    throw new Error("quote HTTP " + response.getResponseCode());
+  }
+  const data = JSON.parse(response.getContentText());
+  const item = data.quoteResponse && data.quoteResponse.result && data.quoteResponse.result[0];
+  if (!item) throw new Error("quoteデータなし");
+
+  const price = Number(item.regularMarketPrice);
+  const change = Number(item.regularMarketChange);
+  const changePercent = Number(item.regularMarketChangePercent);
+  let previousClose = Number(item.regularMarketPreviousClose);
+  if (!previousClose && Number.isFinite(price) && Number.isFinite(change)) {
+    previousClose = price - change;
+  }
+  if (!Number.isFinite(price) || !Number.isFinite(change) || !Number.isFinite(changePercent) || !previousClose) {
+    throw new Error("quote価格取得失敗");
+  }
+  const quoteTime = item.regularMarketTime
+    ? new Date(Number(item.regularMarketTime) * 1000).toISOString()
+    : new Date().toISOString();
+  return quoteResult(price, previousClose, changePercent, item.currency || "JPY", quoteTime, item.marketState || "");
+}
+
 function fetchQuoteFromDailyChart(symbol) {
   const url = "https://query1.finance.yahoo.com/v8/finance/chart/"
     + encodeURIComponent(symbol)
@@ -176,6 +210,7 @@ function fetchQuoteFromDailyChart(symbol) {
   const price = Number(meta.regularMarketPrice || closes[closes.length - 1]);
   const previousClose = Number(closes[closes.length - 2]);
   if (!price || !previousClose) throw new Error("日足価格取得失敗");
+  if (price === previousClose) throw new Error("前日比確認不可");
   const quoteTime = meta.regularMarketTime
     ? new Date(Number(meta.regularMarketTime) * 1000).toISOString()
     : new Date().toISOString();
