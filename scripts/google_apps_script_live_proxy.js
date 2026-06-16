@@ -63,6 +63,7 @@ function fetchQuote(symbol) {
     } catch (error) {
       // Yahoo!ファイナンス日本版を優先し、取れない時だけチャートAPIに戻します。
     }
+    return fetchQuoteFromDailyChart(symbol);
   }
   return fetchQuoteFromChart(symbol);
 }
@@ -149,6 +150,36 @@ function fetchQuoteFromChart(symbol) {
     ? new Date(Number(meta.regularMarketTime) * 1000).toISOString()
     : new Date().toISOString();
   return quoteResult(price, previousClose, null, meta.currency || "", quoteTime, meta.marketState || "");
+}
+
+function fetchQuoteFromDailyChart(symbol) {
+  const url = "https://query1.finance.yahoo.com/v8/finance/chart/"
+    + encodeURIComponent(symbol)
+    + "?range=10d&interval=1d&includePrePost=false";
+  const response = UrlFetchApp.fetch(url, {
+    muteHttpExceptions: true,
+    headers: { "User-Agent": "Mozilla/5.0" },
+  });
+  if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+    throw new Error("日足HTTP " + response.getResponseCode());
+  }
+  const data = JSON.parse(response.getContentText());
+  const result = data.chart && data.chart.result && data.chart.result[0];
+  if (!result) throw new Error("日足データなし");
+
+  const meta = result.meta || {};
+  const closes = (((result.indicators || {}).quote || [{}])[0].close || [])
+    .filter((value) => value !== null && value !== undefined)
+    .map(Number);
+  if (closes.length < 2) throw new Error("日足終値不足");
+
+  const price = Number(meta.regularMarketPrice || closes[closes.length - 1]);
+  const previousClose = Number(closes[closes.length - 2]);
+  if (!price || !previousClose) throw new Error("日足価格取得失敗");
+  const quoteTime = meta.regularMarketTime
+    ? new Date(Number(meta.regularMarketTime) * 1000).toISOString()
+    : new Date().toISOString();
+  return quoteResult(price, previousClose, null, meta.currency || "JPY", quoteTime, meta.marketState || "");
 }
 
 function quoteResult(price, previousClose, suppliedChangePercent, currency, quoteTime, marketState) {
