@@ -107,16 +107,22 @@ HTML = """<!doctype html>
       .table-scroll { overflow-x: visible; }
       table { min-width: 0; table-layout: fixed; }
       th, td { padding: 10px 6px; font-size: 12px; line-height: 1.35; }
-      th:nth-child(1), td:nth-child(1),
-      th:nth-child(2), td:nth-child(2),
       th:nth-child(7), td:nth-child(7) { display: none; }
-      th:nth-child(3), td:nth-child(3) { width: 42%; }
-      th:nth-child(4), td:nth-child(4) { width: 20%; }
-      th:nth-child(5), td:nth-child(5) { width: 18%; }
-      th:nth-child(6), td:nth-child(6) { width: 20%; }
+      th:nth-child(1), td:nth-child(1) { width: 15%; }
+      th:nth-child(2), td:nth-child(2) { width: 14%; }
+      th:nth-child(3), td:nth-child(3) { width: 26%; }
+      th:nth-child(4), td:nth-child(4) { width: 15%; }
+      th:nth-child(5), td:nth-child(5) { width: 15%; }
+      th:nth-child(6), td:nth-child(6) { width: 15%; }
+      th:nth-child(1), th:nth-child(2),
+      th:nth-child(4), th:nth-child(5), th:nth-child(6) { font-size: 10px; }
       td:nth-child(3) {
         word-break: keep-all;
         overflow-wrap: anywhere;
+      }
+      td:nth-child(1), td:nth-child(2),
+      td:nth-child(4), td:nth-child(5), td:nth-child(6) {
+        word-break: break-word;
       }
     }
   </style>
@@ -313,6 +319,12 @@ HTML = """<!doctype html>
       const sign = value >= 0 ? "+" : "";
       return `${sign}${value.toFixed(2)}%`;
     }
+    function formatDateTime(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
+    }
     function alertDirection(item) {
       if (typeof item.change_percent !== "number") return null;
       const up = Number(item.up_threshold_percent ?? payload.default_up_threshold_percent);
@@ -354,6 +366,7 @@ HTML = """<!doctype html>
       const batchSize = 80;
       let done = 0;
       let success = 0;
+      let newestQuoteTime = "";
       for (let index = 0; index < symbols.length; index += batchSize) {
         const batch = symbols.slice(index, index + batchSize);
         const data = await fetchJsonp(LIVE_PROXY_URL, { symbols: batch.map((item) => item.symbol).join(",") });
@@ -365,6 +378,9 @@ HTML = """<!doctype html>
             quote.change_text = formatChange(change);
             quote.rate = formatRate(changePercent);
             quote.change_percent = changePercent;
+            if (quote.quote_time && (!newestQuoteTime || new Date(quote.quote_time) > new Date(newestQuoteTime))) {
+              newestQuoteTime = quote.quote_time;
+            }
             success += 1;
           }
           quotes.set(item.symbol, quote);
@@ -386,12 +402,15 @@ HTML = """<!doctype html>
           item.rate = quote.rate;
           item.change_percent = quote.change_percent;
           item.currency = quote.currency || item.currency || "";
+          item.quote_time = quote.quote_time || "";
+          item.market_state = quote.market_state || "";
           item.alert_direction = alertDirection(item);
           item.error = "";
         }
       }
       payload.generated_at = new Date().toISOString();
-      return { success, total: symbols.length };
+      payload.quote_time = newestQuoteTime || payload.generated_at;
+      return { success, total: symbols.length, quote_time: payload.quote_time };
     }
     async function refreshData() {
       if (!els.password.value) return;
@@ -409,7 +428,7 @@ HTML = """<!doctype html>
         currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
           ? previousPortfolioId
           : (payload.portfolios?.[0]?.id ?? null);
-        els.statusText.textContent = `リアルタイム更新: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
+        els.statusText.textContent = `株価時点: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 取得: ${formatDateTime(payload.generated_at)}`;
         render();
       } catch (error) {
         try {
@@ -420,8 +439,8 @@ HTML = """<!doctype html>
             ? previousPortfolioId
             : (payload.portfolios?.[0]?.id ?? null);
           els.statusText.textContent = LIVE_PROXY_URL
-            ? `リアルタイム取得失敗 / 5分自動更新データ: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`
-            : `5分自動更新データ: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
+            ? `リアルタイム取得失敗 / 公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`
+            : `公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
           render();
         } catch (fallbackError) {
           els.statusText.textContent = "更新失敗";
@@ -442,7 +461,7 @@ HTML = """<!doctype html>
         els.gate.hidden = true;
         els.app.hidden = false;
         els.refreshButton.disabled = false;
-        els.statusText.textContent = `最終更新: ${new Date(payload.generated_at).toLocaleString("ja-JP")}`;
+        els.statusText.textContent = `株価時点: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
         render();
       } catch (error) {
         els.gateError.hidden = false;
