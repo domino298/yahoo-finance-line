@@ -85,7 +85,8 @@ def request_text(url: str) -> str:
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/537.36 Chrome Safari",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
         },
     )
@@ -134,6 +135,24 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
     change_text = lines[change_index + 1] if change_index + 1 < len(lines) else ""
     match = re.search("([+\\-\\u2212]?[0-9,]+(?:\\.[0-9]+)?)\\s*\\(([+\\-\\u2212]?[0-9.]+)%\\)", change_text)
     if price is None or not match:
+        try:
+            previous_close_index = lines.index("\u524d\u65e5\u7d42\u5024")
+        except ValueError as exc:
+            raise RuntimeError(f"Missing Yahoo Japan price data for {symbol}") from exc
+
+        for line in lines[previous_close_index + 1 : previous_close_index + 8]:
+            close_match = re.search("([0-9][0-9,]*(?:\\.[0-9]+)?)\\([0-9]{2}/[0-9]{2}\\)", line)
+            if close_match:
+                previous_close = parse_number(close_match.group(1))
+                return Quote(
+                    symbol=symbol,
+                    name=name or symbol,
+                    price=previous_close,
+                    previous_close=previous_close,
+                    change_percent=0.0,
+                    currency="JPY",
+                    market_time=None,
+                )
         raise RuntimeError(f"Missing Yahoo Japan price data for {symbol}")
 
     change = parse_number(match.group(1))
@@ -152,6 +171,12 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
 
 def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
     is_japan_stock = symbol.endswith(".T")
+    if is_japan_stock:
+        try:
+            return fetch_quote_from_yahoo_japan(symbol, name)
+        except Exception:
+            pass
+
     params = urllib.parse.urlencode({"range": "1d", "interval": "1m", "includePrePost": "false"})
     url = f"{YAHOO_CHART_URL.format(symbol=urllib.parse.quote(symbol))}?{params}"
     payload = request_json(url)
