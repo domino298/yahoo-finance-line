@@ -46,8 +46,8 @@ function doGet(e) {
 function fetchQuotes(symbols) {
   const quotes = {};
   const fallbackSymbols = [];
-  const japanSymbols = symbols.filter((symbol) => /\.T$/.test(symbol));
-  const otherSymbols = symbols.filter((symbol) => !/\.T$/.test(symbol));
+  const japanSymbols = symbols;
+  const otherSymbols = [];
 
   const japanRequests = japanSymbols.map((symbol) => ({
     url: "https://finance.yahoo.co.jp/quote/" + encodeURIComponent(symbol),
@@ -80,7 +80,7 @@ function fetchQuotes(symbols) {
   for (const symbol of quoteApiSymbols) {
     if (quotes[symbol] && !quotes[symbol].error) continue;
     try {
-      quotes[symbol] = /\.T$/.test(symbol) ? fetchQuoteFromDailyChart(symbol) : fetchQuoteFromChart(symbol);
+      quotes[symbol] = isJapanMarketSymbol(symbol) ? fetchQuoteFromDailyChart(symbol) : fetchQuoteFromChart(symbol);
     } catch (error) {
       quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
     }
@@ -90,12 +90,12 @@ function fetchQuotes(symbols) {
 }
 
 function fetchQuote(symbol) {
-  if (/\.T$/.test(symbol)) {
-    try {
-      return fetchQuoteFromYahooJapan(symbol);
-    } catch (error) {
-      // Yahoo!ファイナンス日本版を優先し、取れない時だけ別ルートへ戻します。
-    }
+  try {
+    return fetchQuoteFromYahooJapan(symbol);
+  } catch (error) {
+    // Yahoo!ファイナンス日本版を優先し、取れない時だけ別ルートへ戻します。
+  }
+  if (isJapanMarketSymbol(symbol)) {
     try {
       return fetchQuoteFromQuoteApi(symbol);
     } catch (error) {
@@ -104,6 +104,10 @@ function fetchQuote(symbol) {
     return fetchQuoteFromDailyChart(symbol);
   }
   return fetchQuoteFromChart(symbol);
+}
+
+function isJapanMarketSymbol(symbol) {
+  return /\.(T|N|S|F)$/.test(symbol);
 }
 
 function fetchQuoteFromYahooJapan(symbol) {
