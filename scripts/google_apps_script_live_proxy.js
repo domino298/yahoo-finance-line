@@ -17,9 +17,10 @@ function doGet(e) {
     quotes: {},
   };
 
+  const quotes = fetchQuotes(symbols);
   for (const symbol of symbols) {
-    try {
-      payload.quotes[symbol] = fetchQuote(symbol);
+    payload.quotes[symbol] = quotes[symbol] || { error: "取得失敗" };
+    if (!payload.quotes[symbol].error) {
       if (
         payload.quotes[symbol].quote_time
         && (!payload.quote_time || new Date(payload.quotes[symbol].quote_time) > new Date(payload.quote_time))
@@ -27,28 +28,14 @@ function doGet(e) {
         payload.quote_time = payload.quotes[symbol].quote_time;
       }
       payload.success += 1;
-    } catch (error) {
-      payload.quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
     }
   }
   if (!payload.quote_time) payload.quote_time = payload.generated_at;
 
   const json = JSON.stringify(payload);
   if (/^[A-Za-z_$][0-9A-Za-z_$]*(\.[A-Za-z_$][0-9A-Za-z_$]*)*$/.test(callback)) {
-    const statusScript = [
-      "setTimeout(function(){",
-      "try{",
-      "var el=document.getElementById('statusText');",
-      "if(el){",
-      "var q=new Date(" + JSON.stringify(payload.quote_time) + ");",
-      "var g=new Date(" + JSON.stringify(payload.generated_at) + ");",
-      "el.textContent='株価時点: '+q.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'})+' / 取得: '+g.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});",
-      "}",
-      "}catch(e){}",
-      "},300);",
-    ].join("");
     return ContentService
-      .createTextOutput(callback + "(" + json + ");" + statusScript)
+      .createTextOutput(callback + "(" + json + ");")
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService
@@ -56,17 +43,63 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+function fetchQuotes(symbols) {
+  const quotes = {};
+  const fallbackSymbols = [];
+  const japanSymbols = symbols.filter((symbol) => /\.T$/.test(symbol));
+  const otherSymbols = symbols.filter((symbol) => !/\.T$/.test(symbol));
+
+  const japanRequests = japanSymbols.map((symbol) => ({
+    url: "https://finance.yahoo.co.jp/quote/" + encodeURIComponent(symbol),
+    muteHttpExceptions: true,
+    headers: {
+      "User-Agent": "Mozilla/5.0",
+      "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+    },
+  }));
+
+  if (japanRequests.length) {
+    const responses = UrlFetchApp.fetchAll(japanRequests);
+    for (let index = 0; index < japanSymbols.length; index += 1) {
+      const symbol = japanSymbols[index];
+      const response = responses[index];
+      try {
+        if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+          throw new Error("Yahoo日本版 HTTP " + response.getResponseCode());
+        }
+        quotes[symbol] = parseYahooJapanQuote(symbol, response.getContentText("UTF-8"));
+      } catch (error) {
+        fallbackSymbols.push(symbol);
+      }
+    }
+  }
+
+  const quoteApiSymbols = fallbackSymbols.concat(otherSymbols);
+  Object.assign(quotes, fetchQuotesFromQuoteApi(quoteApiSymbols));
+
+  for (const symbol of quoteApiSymbols) {
+    if (quotes[symbol] && !quotes[symbol].error) continue;
+    try {
+      quotes[symbol] = /\.T$/.test(symbol) ? fetchQuoteFromDailyChart(symbol) : fetchQuoteFromChart(symbol);
+    } catch (error) {
+      quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
+    }
+  }
+
+  return quotes;
+}
+
 function fetchQuote(symbol) {
   if (/\.T$/.test(symbol)) {
     try {
-      return fetchQuoteFromQuoteApi(symbol);
-    } catch (error) {
-      // 軽いquote APIで取れない時だけYahoo!ファイナンス日本版を読みます。
-    }
-    try {
       return fetchQuoteFromYahooJapan(symbol);
     } catch (error) {
-      // Yahoo!ファイナンス日本版も取れない時は日足で最後に確認します。
+      // Yahoo!ファイナンス日本版を優先し、取れない時だけ別ルートへ戻します。
+    }
+    try {
+      return fetchQuoteFromQuoteApi(symbol);
+    } catch (error) {
+      // quote APIも取れない時は日足で最後に確認します。
     }
     return fetchQuoteFromDailyChart(symbol);
   }
@@ -86,7 +119,11 @@ function fetchQuoteFromYahooJapan(symbol) {
     throw new Error("Yahoo日本版 HTTP " + response.getResponseCode());
   }
 
-  const lines = htmlToLines(response.getContentText("UTF-8"));
+  return parseYahooJapanQuote(symbol, response.getContentText("UTF-8"));
+}
+
+function parseYahooJapanQuote(symbol, html) {
+  const lines = htmlToLines(html);
   const changeIndex = lines.indexOf("前日比");
   if (changeIndex < 0) throw new Error("Yahoo日本版 前日比なし");
 
@@ -158,32 +195,56 @@ function fetchQuoteFromChart(symbol) {
 }
 
 function fetchQuoteFromQuoteApi(symbol) {
-  const url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=" + encodeURIComponent(symbol);
+  const quotes = fetchQuotesFromQuoteApi([symbol]);
+  if (!quotes[symbol] || quotes[symbol].error) {
+    throw new Error(quotes[symbol] ? quotes[symbol].error : "quote取得失敗");
+  }
+  return quotes[symbol];
+}
+
+function fetchQuotesFromQuoteApi(symbols) {
+  const quotes = {};
+  if (!symbols.length) return quotes;
+  const joinedSymbols = symbols.join(",");
+  const url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=" + encodeURIComponent(joinedSymbols);
   const response = UrlFetchApp.fetch(url, {
     muteHttpExceptions: true,
     headers: { "User-Agent": "Mozilla/5.0" },
   });
   if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
-    throw new Error("quote HTTP " + response.getResponseCode());
+    for (const symbol of symbols) {
+      quotes[symbol] = { error: "quote HTTP " + response.getResponseCode() };
+    }
+    return quotes;
   }
   const data = JSON.parse(response.getContentText());
-  const item = data.quoteResponse && data.quoteResponse.result && data.quoteResponse.result[0];
-  if (!item) throw new Error("quoteデータなし");
+  const items = data.quoteResponse && data.quoteResponse.result ? data.quoteResponse.result : [];
+  const bySymbol = {};
+  for (const item of items) bySymbol[item.symbol] = item;
 
-  const price = Number(item.regularMarketPrice);
-  const change = Number(item.regularMarketChange);
-  const changePercent = Number(item.regularMarketChangePercent);
-  let previousClose = Number(item.regularMarketPreviousClose);
-  if (!previousClose && Number.isFinite(price) && Number.isFinite(change)) {
-    previousClose = price - change;
+  for (const symbol of symbols) {
+    try {
+      const item = bySymbol[symbol];
+      if (!item) throw new Error("quoteデータなし");
+      const price = Number(item.regularMarketPrice);
+      const change = Number(item.regularMarketChange);
+      const changePercent = Number(item.regularMarketChangePercent);
+      let previousClose = Number(item.regularMarketPreviousClose);
+      if (!previousClose && Number.isFinite(price) && Number.isFinite(change)) {
+        previousClose = price - change;
+      }
+      if (!Number.isFinite(price) || !Number.isFinite(change) || !Number.isFinite(changePercent) || !previousClose) {
+        throw new Error("quote価格取得失敗");
+      }
+      const quoteTime = item.regularMarketTime
+        ? new Date(Number(item.regularMarketTime) * 1000).toISOString()
+        : new Date().toISOString();
+      quotes[symbol] = quoteResult(price, previousClose, changePercent, item.currency || "JPY", quoteTime, item.marketState || "");
+    } catch (error) {
+      quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
+    }
   }
-  if (!Number.isFinite(price) || !Number.isFinite(change) || !Number.isFinite(changePercent) || !previousClose) {
-    throw new Error("quote価格取得失敗");
-  }
-  const quoteTime = item.regularMarketTime
-    ? new Date(Number(item.regularMarketTime) * 1000).toISOString()
-    : new Date().toISOString();
-  return quoteResult(price, previousClose, changePercent, item.currency || "JPY", quoteTime, item.marketState || "");
+  return quotes;
 }
 
 function fetchQuoteFromDailyChart(symbol) {
@@ -288,5 +349,9 @@ function todayJapanTimeIso(hour, minute) {
     String(japan.getUTCMonth() + 1).padStart(2, "0"),
     String(japan.getUTCDate()).padStart(2, "0"),
   ].join("-");
-  return new Date(date + "T" + String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0") + ":00+09:00").toISOString();
+  let quoteTime = new Date(date + "T" + String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0") + ":00+09:00");
+  if (quoteTime.getTime() > now.getTime() + 10 * 60 * 1000) {
+    quoteTime = new Date(quoteTime.getTime() - 24 * 60 * 60 * 1000);
+  }
+  return quoteTime.toISOString();
 }
