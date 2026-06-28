@@ -362,7 +362,7 @@ HTML = """<!doctype html>
         const timeout = window.setTimeout(() => {
           cleanup();
           reject(new Error("中継タイムアウト"));
-        }, 45000);
+        }, 90000);
         function cleanup() {
           window.clearTimeout(timeout);
           delete window[callbackName];
@@ -385,7 +385,7 @@ HTML = """<!doctype html>
       if (!LIVE_PROXY_URL) throw new Error("リアルタイム中継未設定");
       const symbols = uniqueSymbols();
       const quotes = new Map();
-      const batchSize = 20;
+      const batchSize = 10;
       let done = 0;
       let success = 0;
       let failed = 0;
@@ -419,6 +419,9 @@ HTML = """<!doctype html>
         }
         done += batch.length;
         els.statusText.textContent = `リアルタイム取得中: ${done}/${symbols.length} / OK ${success} / 失敗 ${failed}`;
+        if (index + batchSize < symbols.length) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+        }
       }
       for (const portfolio of payload.portfolios || []) {
         for (const item of portfolio.symbols || []) {
