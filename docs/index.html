@@ -351,7 +351,7 @@
         const timeout = window.setTimeout(() => {
           cleanup();
           reject(new Error("中継タイムアウト"));
-        }, 45000);
+        }, 90000);
         function cleanup() {
           window.clearTimeout(timeout);
           delete window[callbackName];
