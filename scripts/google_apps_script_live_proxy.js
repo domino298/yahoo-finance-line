@@ -50,11 +50,13 @@ function fetchQuotes(symbols) {
   const otherSymbols = [];
 
   const japanRequests = japanSymbols.map((symbol) => ({
-    url: "https://finance.yahoo.co.jp/quote/" + encodeURIComponent(symbol),
+    url: yahooJapanQuoteUrl(symbol),
     muteHttpExceptions: true,
     headers: {
       "User-Agent": "Mozilla/5.0",
       "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
     },
   }));
 
@@ -111,12 +113,14 @@ function isJapanMarketSymbol(symbol) {
 }
 
 function fetchQuoteFromYahooJapan(symbol) {
-  const url = "https://finance.yahoo.co.jp/quote/" + encodeURIComponent(symbol);
+  const url = yahooJapanQuoteUrl(symbol);
   const response = UrlFetchApp.fetch(url, {
     muteHttpExceptions: true,
     headers: {
       "User-Agent": "Mozilla/5.0",
       "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
     },
   });
   if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
@@ -124,6 +128,10 @@ function fetchQuoteFromYahooJapan(symbol) {
   }
 
   return parseYahooJapanQuote(symbol, response.getContentText("UTF-8"));
+}
+
+function yahooJapanQuoteUrl(symbol) {
+  return "https://finance.yahoo.co.jp/quote/" + encodeURIComponent(symbol) + "?_=" + Date.now();
 }
 
 function parseYahooJapanQuote(symbol, html) {
@@ -139,21 +147,31 @@ function parseYahooJapanQuote(symbol, html) {
     }
   }
 
-  let changeMatch = null;
+  let change = null;
+  let changePercent = null;
   for (let index = changeIndex + 1; index < Math.min(lines.length, changeIndex + 8); index += 1) {
-    changeMatch = lines[index].match(/([+\-\u2212]?[0-9,]+(?:\.[0-9]+)?)\s*\(([+\-\u2212]?[0-9.]+)%\)/);
-    if (changeMatch) break;
+    const combinedMatch = lines[index].match(/([+\-\u2212]?[0-9,]+(?:\.[0-9]+)?)\s*\(([+\-\u2212]?[0-9.]+)%\)/);
+    if (combinedMatch) {
+      change = parseNumber(combinedMatch[1]);
+      changePercent = parseNumber(combinedMatch[2]);
+      break;
+    }
+    if (change === null && /^[+\-\u2212][0-9,]+(?:\.[0-9]+)?$/.test(lines[index])) {
+      change = parseNumber(lines[index]);
+    }
+    const percentMatch = lines[index].match(/\(([+\-\u2212]?[0-9.]+)%\)|^([+\-\u2212]?[0-9.]+)%$/);
+    if (changePercent === null && percentMatch) {
+      changePercent = parseNumber(percentMatch[1] || percentMatch[2]);
+    }
   }
 
-  if (price === null || !changeMatch) {
+  if (price === null || change === null || changePercent === null) {
     const close = findPreviousCloseFromYahooJapanLines(lines);
     if (close === null) throw new Error("Yahoo日本版 価格取得失敗");
     price = close;
     return quoteResult(price, close, 0, "JPY", yahooJapanQuoteTime(lines), "CLOSED");
   }
 
-  const change = parseNumber(changeMatch[1]);
-  const changePercent = parseNumber(changeMatch[2]);
   const previousClose = price - change;
   return quoteResult(price, previousClose, changePercent, "JPY", yahooJapanQuoteTime(lines), "REGULAR");
 }
@@ -321,7 +339,12 @@ function decodeHtml(text) {
 }
 
 function parseNumber(value) {
-  return Number(String(value || "").replace(/,/g, "").replace(/\+/g, "").replace(/\u2212/g, "-").trim());
+  return Number(String(value || "")
+    .replace(/,/g, "")
+    .replace(/\+/g, "")
+    .replace(/\u2212/g, "-")
+    .replace(/[円％%]/g, "")
+    .trim());
 }
 
 function findPreviousCloseFromYahooJapanLines(lines) {
@@ -340,6 +363,8 @@ function yahooJapanQuoteTime(lines) {
     for (let index = realtimeIndex + 1; index < Math.min(lines.length, realtimeIndex + 5); index += 1) {
       const match = lines[index].match(/^([0-2]?[0-9]):([0-5][0-9])$/);
       if (match) return todayJapanTimeIso(Number(match[1]), Number(match[2]));
+      const dateMatch = lines[index].match(/^([0-1]?[0-9])\/([0-3]?[0-9])$/);
+      if (dateMatch) return japanDateTimeIso(Number(dateMatch[1]), Number(dateMatch[2]), 15, 30);
     }
   }
   return new Date().toISOString();
@@ -356,6 +381,30 @@ function todayJapanTimeIso(hour, minute) {
   let quoteTime = new Date(date + "T" + String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0") + ":00+09:00");
   if (quoteTime.getTime() > now.getTime() + 10 * 60 * 1000) {
     quoteTime = new Date(quoteTime.getTime() - 24 * 60 * 60 * 1000);
+  }
+  return quoteTime.toISOString();
+}
+
+function japanDateTimeIso(month, day, hour, minute) {
+  const now = new Date();
+  const japan = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  let year = japan.getUTCFullYear();
+  let quoteTime = new Date(
+    year + "-"
+    + String(month).padStart(2, "0") + "-"
+    + String(day).padStart(2, "0") + "T"
+    + String(hour).padStart(2, "0") + ":"
+    + String(minute).padStart(2, "0") + ":00+09:00"
+  );
+  if (quoteTime.getTime() > now.getTime() + 10 * 60 * 1000) {
+    year -= 1;
+    quoteTime = new Date(
+      year + "-"
+      + String(month).padStart(2, "0") + "-"
+      + String(day).padStart(2, "0") + "T"
+      + String(hour).padStart(2, "0") + ":"
+      + String(minute).padStart(2, "0") + ":00+09:00"
+    );
   }
   return quoteTime.toISOString();
 }
