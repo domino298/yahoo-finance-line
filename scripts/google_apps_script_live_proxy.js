@@ -46,8 +46,8 @@ function doGet(e) {
 function fetchQuotes(symbols) {
   const quotes = {};
   const fallbackSymbols = [];
-  const japanSymbols = symbols;
-  const otherSymbols = [];
+  const japanSymbols = symbols.filter(isYahooJapanQuoteSymbol);
+  const otherSymbols = symbols.filter((symbol) => !isYahooJapanQuoteSymbol(symbol));
 
   const japanRequests = japanSymbols.map((symbol) => ({
     url: yahooJapanQuoteUrl(symbol),
@@ -112,6 +112,10 @@ function isJapanMarketSymbol(symbol) {
   return /\.(T|N|S|F)$/.test(symbol);
 }
 
+function isYahooJapanQuoteSymbol(symbol) {
+  return isJapanMarketSymbol(symbol) || /^[0-9A-Z]{8}$/i.test(symbol);
+}
+
 function fetchQuoteFromYahooJapan(symbol) {
   const url = yahooJapanQuoteUrl(symbol);
   const response = UrlFetchApp.fetch(url, {
@@ -149,7 +153,14 @@ function parseYahooJapanQuote(symbol, html) {
 
   let change = null;
   let changePercent = null;
+  const changeLines = lines.slice(changeIndex + 1, changeIndex + 8);
+  const joinedMatch = changeLines.join("").match(/^([+\-\u2212]?[0-9,]+(?:\.[0-9]+)?)\(([+\-\u2212]?[0-9.]+)%\)/);
+  if (joinedMatch) {
+    change = parseNumber(joinedMatch[1]);
+    changePercent = parseNumber(joinedMatch[2]);
+  }
   for (let index = changeIndex + 1; index < Math.min(lines.length, changeIndex + 8); index += 1) {
+    if (change !== null && changePercent !== null) break;
     const combinedMatch = lines[index].match(/([+\-\u2212]?[0-9,]+(?:\.[0-9]+)?)\s*\(([+\-\u2212]?[0-9.]+)%\)/);
     if (combinedMatch) {
       change = parseNumber(combinedMatch[1]);
@@ -166,13 +177,13 @@ function parseYahooJapanQuote(symbol, html) {
   }
 
   if (price === null || change === null || changePercent === null) {
-    const close = findPreviousCloseFromYahooJapanLines(lines);
-    if (close === null) throw new Error("Yahoo日本版 価格取得失敗");
-    price = close;
-    return quoteResult(price, close, 0, "JPY", yahooJapanQuoteTime(lines), "CLOSED");
+    throw new Error("Yahoo日本版 現在値取得失敗");
   }
 
   const previousClose = price - change;
+  if (!Number.isFinite(previousClose) || previousClose <= 0) {
+    throw new Error("Yahoo日本版 前日終値不正");
+  }
   return quoteResult(price, previousClose, changePercent, "JPY", yahooJapanQuoteTime(lines), "REGULAR");
 }
 
@@ -293,7 +304,6 @@ function fetchQuoteFromDailyChart(symbol) {
   const price = Number(meta.regularMarketPrice || closes[closes.length - 1]);
   const previousClose = Number(closes[closes.length - 2]);
   if (!price || !previousClose) throw new Error("日足価格取得失敗");
-  if (price === previousClose) throw new Error("前日比確認不可");
   const quoteTime = meta.regularMarketTime
     ? new Date(Number(meta.regularMarketTime) * 1000).toISOString()
     : new Date().toISOString();
@@ -301,6 +311,11 @@ function fetchQuoteFromDailyChart(symbol) {
 }
 
 function quoteResult(price, previousClose, suppliedChangePercent, currency, quoteTime, marketState) {
+  price = Number(price);
+  previousClose = Number(previousClose);
+  if (!Number.isFinite(price) || !Number.isFinite(previousClose) || previousClose <= 0) {
+    throw new Error("価格または前日終値が不正");
+  }
   const change = price - previousClose;
   const changePercent = suppliedChangePercent === null || suppliedChangePercent === undefined
     ? change / previousClose * 100
@@ -347,27 +362,25 @@ function parseNumber(value) {
     .trim());
 }
 
-function findPreviousCloseFromYahooJapanLines(lines) {
-  const closeIndex = lines.indexOf("前日終値");
-  if (closeIndex < 0) return null;
-  for (let index = closeIndex + 1; index < Math.min(lines.length, closeIndex + 10); index += 1) {
-    const match = lines[index].match(/([0-9][0-9,]*(?:\.[0-9]+)?)\([0-9]{2}\/[0-9]{2}\)/);
-    if (match) return parseNumber(match[1]);
-  }
-  return null;
-}
-
 function yahooJapanQuoteTime(lines) {
-  const realtimeIndex = lines.indexOf("リアルタイム株価");
-  if (realtimeIndex >= 0) {
-    for (let index = realtimeIndex + 1; index < Math.min(lines.length, realtimeIndex + 5); index += 1) {
+  let priceLabelIndex = lines.indexOf("リアルタイム株価");
+  if (priceLabelIndex < 0) priceLabelIndex = lines.indexOf("15分ディレイ株価");
+  if (priceLabelIndex >= 0) {
+    for (let index = priceLabelIndex + 1; index < Math.min(lines.length, priceLabelIndex + 5); index += 1) {
       const match = lines[index].match(/^([0-2]?[0-9]):([0-5][0-9])$/);
       if (match) return todayJapanTimeIso(Number(match[1]), Number(match[2]));
       const dateMatch = lines[index].match(/^([0-1]?[0-9])\/([0-3]?[0-9])$/);
       if (dateMatch) return japanDateTimeIso(Number(dateMatch[1]), Number(dateMatch[2]), 15, 30);
     }
   }
-  return new Date().toISOString();
+  const changeIndex = lines.indexOf("前日比");
+  if (changeIndex >= 0) {
+    for (let index = changeIndex + 1; index < Math.min(lines.length, changeIndex + 12); index += 1) {
+      const dateMatch = lines[index].match(/^([0-1]?[0-9])\/([0-3]?[0-9])$/);
+      if (dateMatch) return japanDateTimeIso(Number(dateMatch[1]), Number(dateMatch[2]), 15, 30);
+    }
+  }
+  return "";
 }
 
 function todayJapanTimeIso(hour, minute) {

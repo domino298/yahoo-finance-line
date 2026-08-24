@@ -217,19 +217,21 @@ HTML = """<!doctype html>
       return JSON.parse(new TextDecoder().decode(plain));
     }
     function rateNumber(item) {
+      if (item.error) return 0;
       if (typeof item.change_percent === "number") return item.change_percent;
       return Number(String(item.rate || "").replace("%", "").replace("+", "")) || 0;
     }
     function rateClass(item) {
+      if (item.error) return "";
       if (item.alert_direction === "up" || rateNumber(item) >= Number(payload.default_up_threshold_percent)) return "up";
       if (item.alert_direction === "down" || rateNumber(item) <= Number(payload.default_down_threshold_percent)) return "down";
       return "";
     }
     function judgeText(item) {
+      if (item.error) return item.price === "" || item.price === undefined ? "取得失敗" : "取得失敗（前回値）";
       const kind = rateClass(item);
       if (kind === "up") return "値上がり通知対象";
       if (kind === "down") return "値下がり通知対象";
-      if (item.error) return "取得失敗";
       return "通知なし";
     }
     function buildRows() {
@@ -390,6 +392,7 @@ HTML = """<!doctype html>
       let success = 0;
       let failed = 0;
       let newestQuoteTime = "";
+      let newestJapanQuoteTime = "";
       for (let index = 0; index < symbols.length; index += batchSize) {
         const batch = symbols.slice(index, index + batchSize);
         let data = null;
@@ -411,6 +414,13 @@ HTML = """<!doctype html>
             if (quote.quote_time && (!newestQuoteTime || new Date(quote.quote_time) > new Date(newestQuoteTime))) {
               newestQuoteTime = quote.quote_time;
             }
+            if (
+              (/\.(T|N|S|F)$/i.test(item.symbol) || /^[0-9A-Z]{8}$/i.test(item.symbol))
+              && quote.quote_time
+              && (!newestJapanQuoteTime || new Date(quote.quote_time) > new Date(newestJapanQuoteTime))
+            ) {
+              newestJapanQuoteTime = quote.quote_time;
+            }
             success += 1;
           } else {
             failed += 1;
@@ -429,10 +439,6 @@ HTML = """<!doctype html>
           if (!quote) continue;
           if (quote.error) {
             item.error = quote.error;
-            item.price = "";
-            item.previous_close = "";
-            item.change = "";
-            item.rate = "";
             item.change_percent = null;
             item.alert_direction = null;
             continue;
@@ -450,7 +456,7 @@ HTML = """<!doctype html>
         }
       }
       payload.generated_at = new Date().toISOString();
-      payload.quote_time = newestQuoteTime || payload.generated_at;
+      payload.quote_time = newestJapanQuoteTime || newestQuoteTime || payload.generated_at;
       return { success, failed, total: symbols.length, quote_time: payload.quote_time };
     }
     async function refreshData() {
@@ -469,7 +475,7 @@ HTML = """<!doctype html>
         currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
           ? previousPortfolioId
           : (payload.portfolios?.[0]?.id ?? null);
-        els.statusText.textContent = `株価時点: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 更新: ${formatDateTime(payload.generated_at)} / OK ${liveResult.success} / 失敗 ${liveResult.failed}`;
+        els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 更新: ${formatDateTime(payload.generated_at)} / OK ${liveResult.success} / 失敗 ${liveResult.failed}`;
         render();
       } catch (error) {
         try {
@@ -502,7 +508,7 @@ HTML = """<!doctype html>
         els.gate.hidden = true;
         els.app.hidden = false;
         els.refreshButton.disabled = false;
-        els.statusText.textContent = `株価時点: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
+        els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
         render();
       } catch (error) {
         els.gateError.hidden = false;
