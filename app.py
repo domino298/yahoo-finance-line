@@ -10,7 +10,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -19,9 +19,7 @@ from portfolio_master import load_master_payload
 
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 LINE_PUSH_URL = "https://api.line.me/v2/bot/message/push"
-STALE_JAPAN_QUOTES = {
-    "4748.T": 4130.0,
-}
+JAPAN_TIMEZONE = timezone(timedelta(hours=9))
 
 
 @dataclass(frozen=True)
@@ -115,13 +113,67 @@ class TextExtractor(html.parser.HTMLParser):
 
 
 def parse_number(text: str) -> float:
-    return float(str(text).replace(",", "").replace("+", "").replace("\u2212", "-").strip())
+    return float(
+        str(text)
+        .replace(",", "")
+        .replace("+", "")
+        .replace("\u2212", "-")
+        .replace("円", "")
+        .replace("％", "")
+        .replace("%", "")
+        .strip()
+    )
 
 
-def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quote:
-    url = f"https://finance.yahoo.co.jp/quote/{urllib.parse.quote(symbol)}"
+def is_japan_market_symbol(symbol: str) -> bool:
+    return re.search(r"\.(?:T|N|S|F)$", symbol, flags=re.IGNORECASE) is not None
+
+
+def is_yahoo_japan_quote_symbol(symbol: str) -> bool:
+    return is_japan_market_symbol(symbol) or re.fullmatch(r"[0-9A-Z]{8}", symbol, flags=re.IGNORECASE) is not None
+
+
+def yahoo_japan_market_timestamp(lines: list[str], change_index: int) -> Optional[int]:
+    now = datetime.now(JAPAN_TIMEZONE)
+    candidates: list[str] = []
+    price_label_index = -1
+    for label in ("リアルタイム株価", "15分ディレイ株価"):
+        try:
+            price_label_index = lines.index(label)
+            break
+        except ValueError:
+            continue
+    if price_label_index >= 0:
+        candidates.extend(lines[price_label_index + 1 : price_label_index + 6])
+    candidates.extend(lines[change_index + 1 : change_index + 12])
+
+    for value in candidates:
+        time_match = re.fullmatch(r"([0-2]?[0-9]):([0-5][0-9])", value)
+        if time_match:
+            quote_time = now.replace(
+                hour=int(time_match.group(1)),
+                minute=int(time_match.group(2)),
+                second=0,
+                microsecond=0,
+            )
+            if quote_time > now + timedelta(minutes=10):
+                quote_time -= timedelta(days=1)
+            return int(quote_time.timestamp())
+
+        date_match = re.fullmatch(r"([0-1]?[0-9])/([0-3]?[0-9])", value)
+        if date_match:
+            month = int(date_match.group(1))
+            day = int(date_match.group(2))
+            quote_time = datetime(now.year, month, day, 15, 30, tzinfo=JAPAN_TIMEZONE)
+            if quote_time > now + timedelta(minutes=10):
+                quote_time = quote_time.replace(year=now.year - 1)
+            return int(quote_time.timestamp())
+    return None
+
+
+def parse_yahoo_japan_quote_html(symbol: str, page_html: str, name: Optional[str] = None) -> Quote:
     parser = TextExtractor()
-    parser.feed(request_text(url))
+    parser.feed(page_html)
     lines = [line.strip() for line in parser.parts if line.strip()]
 
     try:
@@ -135,32 +187,44 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
             price = parse_number(line)
             break
 
-    change_text = lines[change_index + 1] if change_index + 1 < len(lines) else ""
-    match = re.search("([+\\-\\u2212]?[0-9,]+(?:\\.[0-9]+)?)\\s*\\(([+\\-\\u2212]?[0-9.]+)%\\)", change_text)
-    if price is None or not match:
-        try:
-            previous_close_index = lines.index("\u524d\u65e5\u7d42\u5024")
-        except ValueError as exc:
-            raise RuntimeError(f"Missing Yahoo Japan price data for {symbol}") from exc
+    change = None
+    change_percent = None
+    change_lines = lines[change_index + 1 : change_index + 8]
+    joined_change = "".join(change_lines)
+    joined_match = re.match(
+        r"([+\-\u2212]?[0-9,]+(?:\.[0-9]+)?)\(([+\-\u2212]?[0-9.]+)%\)",
+        joined_change,
+    )
+    if joined_match:
+        change = parse_number(joined_match.group(1))
+        change_percent = parse_number(joined_match.group(2))
 
-        for line in lines[previous_close_index + 1 : previous_close_index + 8]:
-            close_match = re.search("([0-9][0-9,]*(?:\\.[0-9]+)?)\\([0-9]{2}/[0-9]{2}\\)", line)
-            if close_match:
-                previous_close = parse_number(close_match.group(1))
-                return Quote(
-                    symbol=symbol,
-                    name=name or symbol,
-                    price=previous_close,
-                    previous_close=previous_close,
-                    change_percent=0.0,
-                    currency="JPY",
-                    market_time=None,
-                )
-        raise RuntimeError(f"Missing Yahoo Japan price data for {symbol}")
+    for line in change_lines:
+        if change is not None and change_percent is not None:
+            break
+        combined_match = re.search(
+            r"([+\-\u2212]?[0-9,]+(?:\.[0-9]+)?)\s*\(([+\-\u2212]?[0-9.]+)%\)",
+            line,
+        )
+        if combined_match:
+            change = parse_number(combined_match.group(1))
+            change_percent = parse_number(combined_match.group(2))
+            break
+        if change is None and re.fullmatch(r"[+\-\u2212][0-9,]+(?:\.[0-9]+)?", line):
+            change = parse_number(line)
+        percent_match = re.fullmatch(r"\(([+\-\u2212]?[0-9.]+)%\)", line) or re.fullmatch(
+            r"([+\-\u2212]?[0-9.]+)%", line
+        )
+        if change_percent is None and percent_match:
+            change_percent = parse_number(percent_match.group(1))
 
-    change = parse_number(match.group(1))
-    change_percent = parse_number(match.group(2))
+    if price is None or change is None or change_percent is None:
+        raise RuntimeError(f"Missing current Yahoo Japan price data for {symbol}")
+
     previous_close = price - change
+    if previous_close <= 0:
+        raise RuntimeError(f"Invalid Yahoo Japan previous close for {symbol}")
+
     return Quote(
         symbol=symbol,
         name=name or symbol,
@@ -168,35 +232,20 @@ def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quo
         previous_close=previous_close,
         change_percent=change_percent,
         currency="JPY",
-        market_time=None,
+        market_time=yahoo_japan_market_timestamp(lines, change_index),
     )
 
 
-def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
-    is_japan_stock = symbol.endswith(".T")
-    if is_japan_stock:
-        try:
-            return fetch_quote_from_yahoo_japan(symbol, name)
-        except Exception:
-            pass
+def fetch_quote_from_yahoo_japan(symbol: str, name: Optional[str] = None) -> Quote:
+    url = f"https://finance.yahoo.co.jp/quote/{urllib.parse.quote(symbol)}"
+    return parse_yahoo_japan_quote_html(symbol, request_text(url), name)
 
+
+def fetch_quote_from_chart(symbol: str, name: Optional[str] = None) -> Quote:
+    is_japan_stock = is_japan_market_symbol(symbol)
     params = urllib.parse.urlencode({"range": "1d", "interval": "1m", "includePrePost": "false"})
     url = f"{YAHOO_CHART_URL.format(symbol=urllib.parse.quote(symbol))}?{params}"
-    try:
-        payload = request_json(url)
-    except Exception:
-        if symbol in STALE_JAPAN_QUOTES:
-            price = STALE_JAPAN_QUOTES[symbol]
-            return Quote(
-                symbol=symbol,
-                name=name or symbol,
-                price=price,
-                previous_close=price,
-                change_percent=0.0,
-                currency="JPY",
-                market_time=None,
-            )
-        raise
+    payload = request_json(url)
 
     result = payload.get("chart", {}).get("result") or []
     if not result:
@@ -259,6 +308,15 @@ def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
         currency=meta.get("currency") or "",
         market_time=meta.get("regularMarketTime"),
     )
+
+
+def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
+    if is_yahoo_japan_quote_symbol(symbol):
+        try:
+            return fetch_quote_from_yahoo_japan(symbol, name)
+        except Exception:
+            pass
+    return fetch_quote_from_chart(symbol, name)
 
 
 def load_config(path: Path) -> dict:
