@@ -2,8 +2,6 @@ name: Build encrypted stock dashboard
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "7 0-8 * * 1-5"
 
 permissions:
   contents: read

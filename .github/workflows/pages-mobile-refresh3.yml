@@ -1,9 +1,9 @@
-name: Update stock dashboard data
+name: Build encrypted stock dashboard mobile refresh 3
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/5 0-8 * * 1-5"
+    - cron: "*/15 0-8 * * 1-5"
 
 permissions:
   contents: write
@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -37,10 +37,10 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          path = Path("config.json")
-          data = json.loads(path.read_text(encoding="utf-8"))
+          p = Path("config.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
           data["quote_delay_seconds"] = 0
-          path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+          p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
           PY
 
       - name: Decrypt symbol master
@@ -51,6 +51,9 @@ jobs:
       - name: Build data
         run: python scripts/build_cloud_data.py
 
+      - name: Build site
+        run: python scripts/build_cloud_site.py
+
       - name: Encrypt data
         run: node scripts/encrypt_cloud_data.mjs
         env:
@@ -59,11 +62,11 @@ jobs:
       - name: Disable Jekyll
         run: touch docs/.nojekyll
 
-      - name: Save generated public data
+      - name: Save generated public files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/encrypted-data.json docs/.nojekyll
+          git add docs/index.html docs/encrypted-data.json docs/.nojekyll
           git diff --cached --quiet || git commit -m "Update public stock dashboard data"
           git push || true
 
