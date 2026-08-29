@@ -43,10 +43,8 @@ jobs:
       - name: Build site
         run: python scripts/build_cloud_site_nocount.py
 
-      - name: Encrypt data
-        run: node scripts/encrypt_cloud_data.mjs
-        env:
-          SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
+      - name: Publish data
+        run: cp build/cloud/plain-data.json docs/data.json
 
       - name: Disable Jekyll
         run: touch docs/.nojekyll
