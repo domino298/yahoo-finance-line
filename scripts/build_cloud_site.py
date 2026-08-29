@@ -273,6 +273,55 @@ HTML = """<!doctype html>
       }
       return symbols;
     }
+    function mergeYahooPortfolioSnapshot(snapshot) {
+      const existingBySymbol = new Map();
+      for (const portfolio of payload.portfolios || []) {
+        for (const item of portfolio.symbols || []) {
+          if (!existingBySymbol.has(item.symbol)) existingBySymbol.set(item.symbol, item);
+        }
+      }
+      const previousSymbols = new Set(existingBySymbol.keys());
+      const nextSymbols = new Set();
+      const addedSymbols = [];
+      payload.portfolios = (snapshot.portfolios || []).map((portfolio) => {
+        const symbols = (portfolio.symbols || []).map((item) => {
+          const base = existingBySymbol.get(item.symbol) || {
+            price: "", previous_close: "", change: "", rate: "", change_percent: null,
+            currency: "", quote_time: "", alert_direction: null, error: ""
+          };
+          if (!previousSymbols.has(item.symbol) && !nextSymbols.has(item.symbol)) {
+            addedSymbols.push({ symbol: item.symbol, name: item.name || item.symbol });
+          }
+          nextSymbols.add(item.symbol);
+          return { ...base, ...item, name: item.name || base.name || item.symbol };
+        });
+        return { ...portfolio, count_text: `${symbols.length}件`, symbols };
+      });
+      payload.portfolio_source = snapshot.source || "Yahooファイナンス ポートフォリオ";
+      payload.portfolio_fetched_at = snapshot.fetched_at || "";
+      return {
+        addedSymbols,
+        added: addedSymbols.length,
+        removed: [...previousSymbols].filter((symbol) => !nextSymbols.has(symbol)).length,
+        syncStatus: snapshot.sync_status || "live",
+        syncError: snapshot.sync_error || ""
+      };
+    }
+    async function syncYahooPortfolioList() {
+      if (!LIVE_PROXY_URL) throw new Error("Yahoo同期中継未設定");
+      const snapshot = await fetchJsonp(LIVE_PROXY_URL, { action: "portfolios", sync: "1" });
+      if (!Array.isArray(snapshot.portfolios) || !snapshot.portfolios.length) {
+        throw new Error(snapshot.sync_error || "Yahooポートフォリオ取得失敗");
+      }
+      const result = mergeYahooPortfolioSnapshot(snapshot);
+      buildRows();
+      if (!(payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(currentPortfolioId))) {
+        currentPortfolioId = snapshot.default_portfolio_id ?? payload.portfolios?.[0]?.id ?? null;
+        currentFilter = "portfolio";
+      }
+      render();
+      return result;
+    }
     function formatChange(value) {
       const sign = value >= 0 ? "+" : "";
       return `${sign}${yen.format(value)}`;
@@ -343,9 +392,12 @@ HTML = """<!doctype html>
         document.head.appendChild(script);
       });
     }
-    async function refreshLiveQuotes() {
+    async function refreshLiveQuotes(symbolsOverride) {
       if (!LIVE_PROXY_URL) throw new Error("リアルタイム中継未設定");
-      const symbols = uniqueSymbols();
+      const symbols = symbolsOverride || uniqueSymbols();
+      if (!symbols.length) {
+        return { success: 0, failed: 0, total: 0, quote_time: payload.quote_time || payload.generated_at };
+      }
       const quotes = new Map();
       const batchSize = 10;
       let done = 0;
@@ -416,15 +468,22 @@ HTML = """<!doctype html>
         }
       }
       payload.generated_at = new Date().toISOString();
-      payload.quote_time = newestJapanQuoteTime || newestQuoteTime || payload.generated_at;
+      payload.quote_time = newestJapanQuoteTime || newestQuoteTime || payload.quote_time || payload.generated_at;
       return { success, failed, total: symbols.length, quote_time: payload.quote_time };
     }
     async function refreshData() {
       const previousFilter = currentFilter;
       const previousPortfolioId = currentPortfolioId;
       els.refreshButton.disabled = true;
-      els.statusText.textContent = LIVE_PROXY_URL ? "リアルタイム更新中" : "公開済み最新データを確認中";
+      els.statusText.textContent = LIVE_PROXY_URL ? "Yahoo銘柄・タブ同期中" : "公開済み最新データを確認中";
       try {
+        let portfolioSync = null;
+        try {
+          portfolioSync = await syncYahooPortfolioList();
+        } catch (syncError) {
+          portfolioSync = null;
+        }
+        els.statusText.textContent = "リアルタイム更新中";
         const liveResult = await refreshLiveQuotes();
         if (liveResult.success < 1) {
           throw new Error(`リアルタイム取得失敗: ${liveResult.success}/${liveResult.total}`);
@@ -434,11 +493,14 @@ HTML = """<!doctype html>
         currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
           ? previousPortfolioId
           : (payload.portfolios?.[0]?.id ?? null);
-        els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 更新: ${formatDateTime(payload.generated_at)} / OK ${liveResult.success} / 失敗 ${liveResult.failed}`;
+        const syncText = portfolioSync
+          ? `Yahoo${portfolioSync.syncStatus === "live" ? "同期済み" : "前回同期"} / `
+          : "Yahoo同期失敗 / ";
+        els.statusText.textContent = `${syncText}株価時点（日本株）: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 更新: ${formatDateTime(payload.generated_at)} / OK ${liveResult.success} / 失敗 ${liveResult.failed}`;
         render();
       } catch (error) {
         try {
-          payload = await loadPublishedData();
+          if (!payload) payload = await loadPublishedData();
           buildRows();
           currentFilter = previousFilter || "portfolio";
           currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
@@ -463,9 +525,27 @@ HTML = """<!doctype html>
         buildRows();
         currentPortfolioId = payload.portfolios?.[0]?.id ?? null;
         els.app.hidden = false;
-        els.refreshButton.disabled = false;
         els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
         render();
+        els.statusText.textContent = "Yahoo銘柄・タブ同期中";
+        try {
+          const portfolioSync = await syncYahooPortfolioList();
+          let addedResult = null;
+          if (portfolioSync.addedSymbols.length) {
+            els.statusText.textContent = `新規銘柄の株価取得中: ${portfolioSync.addedSymbols.length}件`;
+            addedResult = await refreshLiveQuotes(portfolioSync.addedSymbols);
+            buildRows();
+            render();
+          }
+          const changeText = portfolioSync.added || portfolioSync.removed
+            ? ` / 追加 ${portfolioSync.added} / 削除 ${portfolioSync.removed}`
+            : "";
+          const quoteText = addedResult ? ` / 新規株価 OK ${addedResult.success} / 失敗 ${addedResult.failed}` : "";
+          els.statusText.textContent = `Yahoo${portfolioSync.syncStatus === "live" ? "同期済み" : "前回同期リスト"}${changeText}${quoteText} / 株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
+        } catch (syncError) {
+          els.statusText.textContent = `Yahoo同期未設定または期限切れ / 公開済みリスト / 株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
+        }
+        els.refreshButton.disabled = false;
       } catch (error) {
         els.statusText.textContent = "データ読み込み失敗";
       }
