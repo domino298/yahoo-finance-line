@@ -32,21 +32,10 @@
     .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
     h1 { margin: 0; font-size: 22px; line-height: 1.25; }
     main { padding: 24px 0 40px; }
-    .gate, .metric, .panel {
+    .metric, .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
-    }
-    .gate { max-width: 480px; margin: 36px auto; padding: 20px; }
-    .gate label { display: block; color: var(--muted); margin-bottom: 8px; }
-    .gate-row { display: flex; gap: 8px; }
-    input {
-      width: 100%;
-      min-height: 40px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 0 12px;
-      font: inherit;
     }
     button {
       appearance: none;
@@ -92,7 +81,6 @@
       .top-actions { width: 100%; justify-content: space-between; }
       h1 { font-size: 20px; }
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .gate-row { flex-direction: column; }
       .table-scroll { overflow-x: visible; }
       table { min-width: 0; table-layout: fixed; }
       th, td { padding: 10px 6px; font-size: 12px; line-height: 1.35; }
@@ -122,19 +110,11 @@
       <h1>株価確認サイト</h1>
       <div class="top-actions">
         <button id="refreshButton" type="button" disabled>更新</button>
-        <div class="muted" id="statusText">パスワード未入力</div>
+        <div class="muted" id="statusText">読み込み中</div>
       </div>
     </div>
   </header>
   <main class="wrap">
-    <section class="gate" id="gate">
-      <label for="password">パスワード</label>
-      <div class="gate-row">
-        <input id="password" type="password" autocomplete="current-password">
-        <button class="primary" id="unlockButton">開く</button>
-      </div>
-      <p class="error" id="gateError" hidden>パスワードが違うか、データを開けませんでした。</p>
-    </section>
     <section id="app" hidden>
       <section class="summary">
         <div class="metric"><div class="label">5%以上上昇</div><div class="value" id="upCount">-</div></div>
@@ -168,11 +148,7 @@
     let currentPortfolioId = null;
     const LIVE_PROXY_URL = "https://script.google.com/macros/s/AKfycbyy0_1l7yyb_OGl3yvRO5cVow5fueYN92QPUKnIT7RUycFQUYF-OTTy0QOp_uSQ-J0TOA/exec";
     const els = {
-      gate: document.querySelector("#gate"),
       app: document.querySelector("#app"),
-      password: document.querySelector("#password"),
-      unlockButton: document.querySelector("#unlockButton"),
-      gateError: document.querySelector("#gateError"),
       refreshButton: document.querySelector("#refreshButton"),
       statusText: document.querySelector("#statusText"),
       upCount: document.querySelector("#upCount"),
@@ -184,26 +160,10 @@
       empty: document.querySelector("#empty")
     };
     const yen = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 2 });
-    function bytesFromBase64(text) {
-      return Uint8Array.from(atob(text), (char) => char.charCodeAt(0));
-    }
-    async function decryptData(password) {
-      const encrypted = await fetch(`encrypted-data.json?v=${Date.now()}`, { cache: "no-store" }).then((res) => res.json());
-      const encoder = new TextEncoder();
-      const baseKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]);
-      const key = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", hash: "SHA-256", salt: bytesFromBase64(encrypted.salt), iterations: encrypted.iterations },
-        baseKey,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"]
-      );
-      const plain = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: bytesFromBase64(encrypted.iv) },
-        key,
-        bytesFromBase64(encrypted.ciphertext)
-      );
-      return JSON.parse(new TextDecoder().decode(plain));
+    async function loadPublishedData() {
+      const response = await fetch(`data.json?v=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`公開データ取得失敗: ${response.status}`);
+      return response.json();
     }
     function rateNumber(item) {
       if (item.error) return 0;
@@ -449,7 +409,6 @@
       return { success, failed, total: symbols.length, quote_time: payload.quote_time };
     }
     async function refreshData() {
-      if (!els.password.value) return;
       const previousFilter = currentFilter;
       const previousPortfolioId = currentPortfolioId;
       els.refreshButton.disabled = true;
@@ -468,7 +427,7 @@
         render();
       } catch (error) {
         try {
-          payload = await decryptData(els.password.value);
+          payload = await loadPublishedData();
           buildRows();
           currentFilter = previousFilter || "portfolio";
           currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
@@ -485,30 +444,23 @@
         els.refreshButton.disabled = false;
       }
     }
-    async function unlock() {
-      els.unlockButton.disabled = true;
-      els.gateError.hidden = true;
+    async function loadInitialData() {
       els.refreshButton.disabled = true;
-      els.statusText.textContent = "確認中";
+      els.statusText.textContent = "読み込み中";
       try {
-        payload = await decryptData(els.password.value);
+        payload = await loadPublishedData();
         buildRows();
         currentPortfolioId = payload.portfolios?.[0]?.id ?? null;
-        els.gate.hidden = true;
         els.app.hidden = false;
         els.refreshButton.disabled = false;
         els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
         render();
       } catch (error) {
-        els.gateError.hidden = false;
-        els.statusText.textContent = "パスワード未入力";
-      } finally {
-        els.unlockButton.disabled = false;
+        els.statusText.textContent = "データ読み込み失敗";
       }
     }
-    els.unlockButton.addEventListener("click", unlock);
     els.refreshButton.addEventListener("click", refreshData);
-    els.password.addEventListener("keydown", (event) => { if (event.key === "Enter") unlock(); });
+    loadInitialData();
   </script>
 </body>
 </html>
