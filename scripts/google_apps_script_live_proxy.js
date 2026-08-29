@@ -1,8 +1,21 @@
 const MAX_SYMBOLS = 400;
+const YAHOO_COOKIE_PROPERTY = "YAHOO_COOKIE";
+const PORTFOLIO_CACHE_PREFIX = "YAHOO_PORTFOLIO_CACHE_";
+const PORTFOLIO_CACHE_CHUNK_SIZE = 8000;
 
 function doGet(e) {
   const params = e && e.parameter ? e.parameter : {};
   const callback = String(params.callback || "");
+  const action = String(params.action || "quotes");
+
+  if (action === "portfolios") {
+    return outputPayload(portfolioResponse(params), callback);
+  }
+  if (action === "session_status") {
+    const configured = Boolean(PropertiesService.getScriptProperties().getProperty(YAHOO_COOKIE_PROPERTY));
+    return outputPayload({ configured: configured }, callback);
+  }
+
   const symbols = String(params.symbols || "")
     .split(",")
     .map((symbol) => symbol.trim())
@@ -32,6 +45,10 @@ function doGet(e) {
   }
   if (!payload.quote_time) payload.quote_time = payload.generated_at;
 
+  return outputPayload(payload, callback);
+}
+
+function outputPayload(payload, callback) {
   const json = JSON.stringify(payload);
   if (/^[A-Za-z_$][0-9A-Za-z_$]*(\.[A-Za-z_$][0-9A-Za-z_$]*)*$/.test(callback)) {
     return ContentService
@@ -41,6 +58,203 @@ function doGet(e) {
   return ContentService
     .createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function portfolioResponse(params) {
+  const shouldSync = String(params.sync || "1") !== "0";
+  let syncError = "";
+  if (shouldSync) {
+    try {
+      const livePayload = syncYahooPortfolios();
+      savePortfolioCache(livePayload);
+      return Object.assign({ sync_status: "live", sync_error: "" }, livePayload);
+    } catch (error) {
+      syncError = cleanError(error);
+    }
+  }
+
+  const cached = loadPortfolioCache();
+  if (cached && Array.isArray(cached.portfolios)) {
+    return Object.assign({ sync_status: "cached", sync_error: syncError }, cached);
+  }
+  return {
+    sync_status: "unavailable",
+    sync_error: syncError || "Yahoo同期データがありません",
+    fetched_at: "",
+    default_portfolio_id: null,
+    portfolios: [],
+  };
+}
+
+function syncYahooPortfolios() {
+  const cookie = PropertiesService.getScriptProperties().getProperty(YAHOO_COOKIE_PROPERTY);
+  if (!cookie) throw new Error("Yahooセッション未設定");
+
+  const firstHtml = fetchYahooPortfolioPage(1, cookie);
+  const links = parseYahooPortfolioLinks(firstHtml);
+  if (!links.length) throw new Error("Yahooポートフォリオ一覧取得失敗");
+
+  const requests = links.map((portfolio) => ({
+    url: yahooPortfolioUrl(portfolio.id),
+    muteHttpExceptions: true,
+    followRedirects: true,
+    headers: yahooPortfolioHeaders(cookie),
+  }));
+  const responses = UrlFetchApp.fetchAll(requests);
+  const portfolios = [];
+  for (let index = 0; index < links.length; index += 1) {
+    const response = responses[index];
+    if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+      throw new Error("Yahooポートフォリオ HTTP " + response.getResponseCode());
+    }
+    const html = response.getContentText("UTF-8");
+    if (isYahooLoginPage(html)) throw new Error("Yahooセッション期限切れ");
+    const symbols = parseYahooPortfolioRows(html);
+    portfolios.push({
+      id: links[index].id,
+      name: links[index].name,
+      url: yahooPortfolioUrl(links[index].id),
+      count_text: symbols.length + "件",
+      as_of: new Date().toISOString(),
+      symbols: symbols,
+    });
+  }
+
+  return {
+    source: "Yahooファイナンス ポートフォリオ（クラウド同期）",
+    fetched_at: new Date().toISOString(),
+    default_portfolio_id: portfolios.length ? portfolios[0].id : null,
+    portfolios: portfolios,
+  };
+}
+
+function fetchYahooPortfolioPage(portfolioId, cookie) {
+  const response = UrlFetchApp.fetch(yahooPortfolioUrl(portfolioId), {
+    muteHttpExceptions: true,
+    followRedirects: true,
+    headers: yahooPortfolioHeaders(cookie),
+  });
+  if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+    throw new Error("Yahooポートフォリオ HTTP " + response.getResponseCode());
+  }
+  const html = response.getContentText("UTF-8");
+  if (isYahooLoginPage(html)) throw new Error("Yahooセッション期限切れ");
+  return html;
+}
+
+function yahooPortfolioUrl(portfolioId) {
+  return "https://finance.yahoo.co.jp/portfolio/detail?portfolioId=" + encodeURIComponent(portfolioId) + "&_=" + Date.now();
+}
+
+function yahooPortfolioHeaders(cookie) {
+  return {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126 Safari/537.36",
+    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+    "Cache-Control": "no-cache",
+    "Pragma": "no-cache",
+    "Cookie": cookie,
+  };
+}
+
+function isYahooLoginPage(html) {
+  const text = String(html || "");
+  return text.includes("ログインするため")
+    || text.includes("確認コードを送信")
+    || text.includes("別のYahoo! JAPAN IDでログイン");
+}
+
+function normalizeYahooHtml(html) {
+  return String(html || "")
+    .replace(/\\u0026/gi, "&")
+    .replace(/\\u003d/gi, "=")
+    .replace(/\\u002f/gi, "/")
+    .replace(/\\\//g, "/");
+}
+
+function parseYahooPortfolioLinks(html) {
+  const source = normalizeYahooHtml(html);
+  const portfolios = [];
+  const seen = {};
+  const pattern = /<a\b[^>]*href=(["'])([^"']*\/portfolio\/detail\?[^"']*portfolioId=(\d+)[^"']*)\1[^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+  while ((match = pattern.exec(source)) !== null) {
+    const id = Number(match[3]);
+    const name = stripHtml(match[4]);
+    if (!id || !name || seen[id]) continue;
+    seen[id] = true;
+    portfolios.push({ id: id, name: name });
+  }
+  return portfolios;
+}
+
+function parseYahooPortfolioRows(html) {
+  const source = normalizeYahooHtml(html);
+  const symbols = [];
+  const seen = {};
+  const rowPattern = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
+  let rowMatch;
+  while ((rowMatch = rowPattern.exec(source)) !== null) {
+    const row = rowMatch[1];
+    const hrefMatch = row.match(/\/quote\/([^"'/?#<\\]+)/i);
+    if (!hrefMatch) continue;
+    let symbol = decodeURIComponent(hrefMatch[1]);
+    symbol = symbol.replace(/&amp;.*$/, "").trim();
+    if (!symbol || seen[symbol]) continue;
+    const linkMatch = row.match(/<a\b[^>]*href=(["'])[^"']*\/quote\/[^"']+\1[^>]*>([\s\S]*?)<\/a>/i);
+    const name = linkMatch ? stripHtml(linkMatch[2]) : symbol;
+    seen[symbol] = true;
+    symbols.push({ symbol: symbol, name: name || symbol });
+  }
+  return symbols;
+}
+
+function stripHtml(value) {
+  return decodeHtml(String(value || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function savePortfolioCache(payload) {
+  const properties = PropertiesService.getScriptProperties();
+  const text = JSON.stringify(payload);
+  const chunks = [];
+  for (let index = 0; index < text.length; index += PORTFOLIO_CACHE_CHUNK_SIZE) {
+    chunks.push(text.slice(index, index + PORTFOLIO_CACHE_CHUNK_SIZE));
+  }
+  const previousCount = Number(properties.getProperty(PORTFOLIO_CACHE_PREFIX + "COUNT") || 0);
+  const values = {};
+  values[PORTFOLIO_CACHE_PREFIX + "COUNT"] = String(chunks.length);
+  for (let index = 0; index < chunks.length; index += 1) {
+    values[PORTFOLIO_CACHE_PREFIX + index] = chunks[index];
+  }
+  properties.setProperties(values, false);
+  for (let index = chunks.length; index < previousCount; index += 1) {
+    properties.deleteProperty(PORTFOLIO_CACHE_PREFIX + index);
+  }
+}
+
+function loadPortfolioCache() {
+  const properties = PropertiesService.getScriptProperties();
+  const count = Number(properties.getProperty(PORTFOLIO_CACHE_PREFIX + "COUNT") || 0);
+  if (!count) return null;
+  let text = "";
+  for (let index = 0; index < count; index += 1) {
+    const chunk = properties.getProperty(PORTFOLIO_CACHE_PREFIX + index);
+    if (chunk === null) return null;
+    text += chunk;
+  }
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return null;
+  }
+}
+
+function cleanError(error) {
+  return String(error || "取得失敗").replace(/^Error: /, "");
 }
 
 function fetchQuotes(symbols) {
