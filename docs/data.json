@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:16:44.889461+00:00",
+  "generated_at": "2026-09-04T12:47:45.361809+00:00",
   "quote_time": "2026-09-04T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -1932,13 +1932,13 @@
         {
           "symbol": "4206.T",
           "name": "アイカ工業(株)",
-          "price": 4198.0,
+          "price": 4088.0,
           "previous_close": 4132.0,
-          "change": "+66.00",
-          "rate": "+1.60%",
-          "change_percent": 1.5972894482090998,
+          "change": "-44.00",
+          "rate": "-1.06%",
+          "change_percent": -1.0648596321393997,
           "currency": "JPY",
-          "quote_time": "2026-09-01T06:30:00+00:00",
+          "quote_time": "2026-09-04T06:30:00+00:00",
           "alert_direction": null,
           "error": ""
         },
@@ -2487,13 +2487,13 @@
         {
           "symbol": "4206.T",
           "name": "アイカ工業(株)",
-          "price": 4198.0,
+          "price": 4088.0,
           "previous_close": 4132.0,
-          "change": "+66.00",
-          "rate": "+1.60%",
-          "change_percent": 1.5972894482090998,
+          "change": "-44.00",
+          "rate": "-1.06%",
+          "change_percent": -1.0648596321393997,
           "currency": "JPY",
-          "quote_time": "2026-09-01T06:30:00+00:00",
+          "quote_time": "2026-09-04T06:30:00+00:00",
           "alert_direction": null,
           "error": ""
         },
@@ -4139,13 +4139,13 @@
         {
           "symbol": "4206.T",
           "name": "アイカ工業(株)",
-          "price": 4198.0,
+          "price": 4088.0,
           "previous_close": 4132.0,
-          "change": "+66.00",
-          "rate": "+1.60%",
-          "change_percent": 1.5972894482090998,
+          "change": "-44.00",
+          "rate": "-1.06%",
+          "change_percent": -1.0648596321393997,
           "currency": "JPY",
-          "quote_time": "2026-09-01T06:30:00+00:00",
+          "quote_time": "2026-09-04T06:30:00+00:00",
           "alert_direction": null,
           "error": ""
         },
@@ -5342,7 +5342,7 @@
           "rate": "+2.62%",
           "change_percent": 2.6243515410436355,
           "currency": "USD",
-          "quote_time": "2026-09-03T20:00:00+00:00",
+          "quote_time": "2026-09-04T12:02:16+00:00",
           "alert_direction": null,
           "error": ""
         }
