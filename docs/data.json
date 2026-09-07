@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T08:41:09.793877+00:00",
+  "generated_at": "2026-09-07T14:30:03.582556+00:00",
   "quote_time": "2026-09-07T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -2205,13 +2205,13 @@
         {
           "symbol": "8931224C",
           "name": "SBI・S・米国高配当株式ファンド(年4回決算型)",
-          "price": 12848.0,
-          "previous_close": 13070.0,
-          "change": "-222.00",
-          "rate": "-1.70%",
-          "change_percent": -1.7,
+          "price": 12767.0,
+          "previous_close": 12848.0,
+          "change": "-81.00",
+          "rate": "-0.63%",
+          "change_percent": -0.63,
           "currency": "JPY",
-          "quote_time": "2026-09-04T06:30:00+00:00",
+          "quote_time": "2026-09-07T06:30:00+00:00",
           "alert_direction": null,
           "error": ""
         },
