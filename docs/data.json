@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T08:27:30.410051+00:00",
+  "generated_at": "2026-09-10T13:05:13.363398+00:00",
   "quote_time": "2026-09-10T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -5342,7 +5342,7 @@
           "rate": "+1.10%",
           "change_percent": 1.1028669153391453,
           "currency": "USD",
-          "quote_time": "2026-09-08T20:00:00+00:00",
+          "quote_time": "2026-09-10T12:40:47+00:00",
           "alert_direction": null,
           "error": ""
         }
