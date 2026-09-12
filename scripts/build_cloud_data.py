@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from app import evaluate_quote, fetch_quote, fetch_quote_from_chart, is_yahoo_japan_quote_symbol, load_config
+from app import evaluate_quote, fetch_quote, is_yahoo_japan_quote_symbol, load_config
 from portfolio_master import load_master_payload
 
 
@@ -22,10 +22,7 @@ PLAIN_DATA_PATH = BUILD_DIR / "plain-data.json"
 def quote_payload(item: dict, config: dict) -> dict:
     try:
         symbol = item["symbol"]
-        if symbol.upper().endswith(".T") or not is_yahoo_japan_quote_symbol(symbol):
-            quote = fetch_quote_from_chart(symbol, item.get("name"))
-        else:
-            quote = fetch_quote(symbol, item.get("name"))
+        quote = fetch_quote(symbol, item.get("name"))
         alert = evaluate_quote(quote, item, config)
         change = quote.price - quote.previous_close
         sign = "+" if change >= 0 else ""
@@ -41,6 +38,7 @@ def quote_payload(item: dict, config: dict) -> dict:
             "currency": quote.currency,
             "quote_time": datetime.fromtimestamp(quote.market_time, timezone.utc).isoformat() if quote.market_time else "",
             "alert_direction": alert.direction if alert else None,
+            "warning": quote.warning,
             "error": "",
         }
     except Exception as exc:
@@ -118,13 +116,14 @@ def main() -> None:
                     "currency": quote.get("currency", ""),
                     "quote_time": quote.get("quote_time", ""),
                     "alert_direction": quote.get("alert_direction"),
+                    "warning": quote.get("warning", ""),
                     "error": quote.get("error", ""),
                 }
             )
 
     payload = {
         "generated_at": generated_at,
-        "quote_time": max(japan_quote_times or quote_times) if (japan_quote_times or quote_times) else generated_at,
+        "quote_time": max(japan_quote_times or quote_times) if (japan_quote_times or quote_times) else "",
         "default_up_threshold_percent": config.get("default_up_threshold_percent", 5.0),
         "default_down_threshold_percent": config.get("default_down_threshold_percent", -5.0),
         "symbol_count": len(unique_symbols),

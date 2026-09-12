@@ -43,7 +43,6 @@ function doGet(e) {
       payload.success += 1;
     }
   }
-  if (!payload.quote_time) payload.quote_time = payload.generated_at;
 
   return outputPayload(payload, callback);
 }
@@ -257,9 +256,19 @@ function cleanError(error) {
   return String(error || "取得失敗").replace(/^Error: /, "");
 }
 
+function safeFetchAll(requests) {
+  try {
+    return UrlFetchApp.fetchAll(requests);
+  } catch (error) {
+    return requests.map(() => ({
+      getResponseCode: () => 599,
+      getContentText: () => "",
+    }));
+  }
+}
+
 function fetchQuotes(symbols) {
   const quotes = {};
-  const fallbackSymbols = [];
   const japanSymbols = symbols.filter(isYahooJapanQuoteSymbol);
   const otherSymbols = symbols.filter((symbol) => !isYahooJapanQuoteSymbol(symbol));
 
@@ -275,7 +284,7 @@ function fetchQuotes(symbols) {
   }));
 
   if (japanRequests.length) {
-    const responses = UrlFetchApp.fetchAll(japanRequests);
+    const responses = safeFetchAll(japanRequests);
     for (let index = 0; index < japanSymbols.length; index += 1) {
       const symbol = japanSymbols[index];
       const response = responses[index];
@@ -284,19 +293,37 @@ function fetchQuotes(symbols) {
           throw new Error("Yahoo日本版 HTTP " + response.getResponseCode());
         }
         quotes[symbol] = parseYahooJapanQuote(symbol, response.getContentText("UTF-8"));
+        if (!quotes[symbol].quote_time) throw new Error("株価日付を確認できません");
       } catch (error) {
-        fallbackSymbols.push(symbol);
+        quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
       }
     }
   }
 
-  const quoteApiSymbols = fallbackSymbols.concat(otherSymbols);
-  Object.assign(quotes, fetchQuotesFromQuoteApi(quoteApiSymbols));
+  const sessionAlignedQuotes = fetchQuotesFromDailyChart(japanSymbols.filter(isJapanMarketSymbol));
+  for (const symbol of Object.keys(sessionAlignedQuotes)) {
+    if (!sessionAlignedQuotes[symbol].error) quotes[symbol] = sessionAlignedQuotes[symbol];
+  }
 
-  for (const symbol of quoteApiSymbols) {
+  try {
+    Object.assign(quotes, fetchQuotesFromQuoteApi(otherSymbols));
+  } catch (error) {
+    // The per-symbol chart fallback below can still succeed.
+  }
+
+  for (const symbol of otherSymbols) {
     if (quotes[symbol] && !quotes[symbol].error) continue;
     try {
-      quotes[symbol] = isJapanMarketSymbol(symbol) ? fetchQuoteFromDailyChart(symbol) : fetchQuoteFromChart(symbol);
+      quotes[symbol] = fetchQuoteFromChart(symbol);
+    } catch (error) {
+      quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
+    }
+  }
+
+  for (const symbol of japanSymbols) {
+    if (quotes[symbol] && !quotes[symbol].error) continue;
+    try {
+      quotes[symbol] = fetchQuoteFromYahooJapanHistory(symbol);
     } catch (error) {
       quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
     }
@@ -306,24 +333,29 @@ function fetchQuotes(symbols) {
 }
 
 function fetchQuote(symbol) {
+  if (isJapanMarketSymbol(symbol)) {
+    try {
+      return fetchQuoteFromDailyChart(symbol);
+    } catch (error) {
+      try {
+        const quote = fetchQuoteFromYahooJapan(symbol);
+        if (!quote.quote_time) throw new Error("株価日付を確認できません");
+        return quote;
+      } catch (pageError) {
+        return fetchQuoteFromYahooJapanHistory(symbol);
+      }
+    }
+  }
   try {
     return fetchQuoteFromYahooJapan(symbol);
   } catch (error) {
-    // Yahoo!ファイナンス日本版を優先し、取れない時だけ別ルートへ戻します。
-  }
-  if (isJapanMarketSymbol(symbol)) {
-    try {
-      return fetchQuoteFromQuoteApi(symbol);
-    } catch (error) {
-      // quote APIも取れない時は日足で最後に確認します。
-    }
-    return fetchQuoteFromDailyChart(symbol);
+    if (isYahooJapanQuoteSymbol(symbol)) return fetchQuoteFromYahooJapanHistory(symbol);
   }
   return fetchQuoteFromChart(symbol);
 }
 
 function isJapanMarketSymbol(symbol) {
-  return /\.(T|N|S|F)$/.test(symbol);
+  return /\.(T|N|S|F)$/i.test(symbol);
 }
 
 function isYahooJapanQuoteSymbol(symbol) {
@@ -346,6 +378,60 @@ function fetchQuoteFromYahooJapan(symbol) {
   }
 
   return parseYahooJapanQuote(symbol, response.getContentText("UTF-8"));
+}
+
+function fetchQuoteFromYahooJapanHistory(symbol) {
+  const response = UrlFetchApp.fetch(
+    "https://finance.yahoo.co.jp/quote/" + encodeURIComponent(symbol) + "/history?_=" + Date.now(),
+    {
+      muteHttpExceptions: true,
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+      },
+    }
+  );
+  if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+    throw new Error("Yahoo日本版時系列 HTTP " + response.getResponseCode());
+  }
+  return parseYahooJapanHistoryQuote(symbol, response.getContentText("UTF-8"));
+}
+
+function parseYahooJapanHistoryQuote(symbol, html, now = new Date()) {
+  const byDate = new Map();
+  let closeIndex = isJapanMarketSymbol(symbol) ? 4 : -1;
+  for (const match of String(html).matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
+    const cells = [...match[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)]
+      .map((cell) => stripHtml(cell[1]));
+    if (cells[0] === "日付") {
+      closeIndex = cells.findIndex((cell) => cell === "終値" || cell === "基準価額");
+      continue;
+    }
+    if (!/^20[0-9]{2}\/[0-1]?[0-9]\/[0-3]?[0-9]$/.test(cells[0] || "")) continue;
+    const parts = cells[0].split("/");
+    const date = parts.map((part, i) => part.padStart(i ? 2 : 4, "0")).join("-");
+    if (new Date(date + "T15:30:00+09:00") > now) continue;
+    if (closeIndex < 0 || !/^[0-9][0-9,]*(?:\.[0-9]+)?$/.test(cells[closeIndex] || "")) {
+      throw new Error("時系列の終値が欠損しています");
+    }
+    byDate.set(date, { date, close: parseNumber(cells[closeIndex]) });
+  }
+  const rows = [...byDate.values()].sort((a, b) => b.date.localeCompare(a.date));
+  if (rows.length < 2) throw new Error("Yahoo日本版時系列不足");
+  const dateParts = rows[0].date.split("-").map(Number);
+  const quoteTime = new Date(
+    String(dateParts[0]).padStart(4, "0") + "-"
+    + String(dateParts[1]).padStart(2, "0") + "-"
+    + String(dateParts[2]).padStart(2, "0") + "T15:30:00+09:00"
+  ).toISOString();
+  const quote = quoteResult(rows[0].close, rows[1].close, null, "JPY", quoteTime, "CLOSED");
+  quote.quote_session_date = rows[0].date.replace(/\//g, "-");
+  quote.previous_close_session_date = rows[1].date.replace(/\//g, "-");
+  quote.source = "yahoo_japan_history";
+  quote.warning = "履歴終値（現在値の取得失敗時の参考値）";
+  return quote;
 }
 
 function yahooJapanQuoteUrl(symbol) {
@@ -398,7 +484,10 @@ function parseYahooJapanQuote(symbol, html) {
   if (!Number.isFinite(previousClose) || previousClose <= 0) {
     throw new Error("Yahoo日本版 前日終値不正");
   }
-  return quoteResult(price, previousClose, changePercent, "JPY", yahooJapanQuoteTime(lines), "REGULAR");
+  if (Math.abs(change / previousClose * 100 - changePercent) > 0.011) {
+    throw new Error("Yahoo日本版の現在値と前日比が不整合です");
+  }
+  return quoteResult(price, previousClose, changePercent, "JPY", yahooJapanQuoteTime(lines), "");
 }
 
 function fetchQuoteFromChart(symbol) {
@@ -426,9 +515,6 @@ function fetchQuoteFromChart(symbol) {
   if ((price === null || price === undefined) && closes.length) {
     price = closes[closes.length - 1];
   }
-  if ((previousClose === null || previousClose === undefined) && closes.length >= 2) {
-    previousClose = closes[closes.length - 2];
-  }
   if (price === null || price === undefined || !previousClose) {
     throw new Error("価格取得失敗");
   }
@@ -437,7 +523,7 @@ function fetchQuoteFromChart(symbol) {
   previousClose = Number(previousClose);
   const quoteTime = meta.regularMarketTime
     ? new Date(Number(meta.regularMarketTime) * 1000).toISOString()
-    : new Date().toISOString();
+    : "";
   return quoteResult(price, previousClose, null, meta.currency || "", quoteTime, meta.marketState || "");
 }
 
@@ -485,7 +571,7 @@ function fetchQuotesFromQuoteApi(symbols) {
       }
       const quoteTime = item.regularMarketTime
         ? new Date(Number(item.regularMarketTime) * 1000).toISOString()
-        : new Date().toISOString();
+        : "";
       quotes[symbol] = quoteResult(price, previousClose, changePercent, item.currency || "JPY", quoteTime, item.marketState || "");
     } catch (error) {
       quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
@@ -497,7 +583,7 @@ function fetchQuotesFromQuoteApi(symbols) {
 function fetchQuoteFromDailyChart(symbol) {
   const url = "https://query1.finance.yahoo.com/v8/finance/chart/"
     + encodeURIComponent(symbol)
-    + "?range=10d&interval=1d&includePrePost=false";
+    + "?range=1mo&interval=1d&includePrePost=false";
   const response = UrlFetchApp.fetch(url, {
     muteHttpExceptions: true,
     headers: { "User-Agent": "Mozilla/5.0" },
@@ -509,31 +595,127 @@ function fetchQuoteFromDailyChart(symbol) {
   const result = data.chart && data.chart.result && data.chart.result[0];
   if (!result) throw new Error("日足データなし");
 
-  const meta = result.meta || {};
-  const closes = (((result.indicators || {}).quote || [{}])[0].close || [])
-    .filter((value) => value !== null && value !== undefined)
-    .map(Number);
-  if (closes.length < 2) throw new Error("日足終値不足");
+  return quoteFromDailyChartResult(symbol, result);
+}
 
-  const price = Number(meta.regularMarketPrice || closes[closes.length - 1]);
-  const previousClose = Number(closes[closes.length - 2]);
-  if (!price || !previousClose) throw new Error("日足価格取得失敗");
-  const quoteTime = meta.regularMarketTime
-    ? new Date(Number(meta.regularMarketTime) * 1000).toISOString()
-    : new Date().toISOString();
-  return quoteResult(price, previousClose, null, meta.currency || "JPY", quoteTime, meta.marketState || "");
+function fetchQuotesFromDailyChart(symbols) {
+  const quotes = {};
+  if (!symbols.length) return quotes;
+  const requests = symbols.map((symbol) => ({
+    url: "https://query1.finance.yahoo.com/v8/finance/chart/"
+      + encodeURIComponent(symbol)
+      + "?range=1mo&interval=1d&includePrePost=false",
+    muteHttpExceptions: true,
+    headers: { "User-Agent": "Mozilla/5.0" },
+  }));
+  const responses = safeFetchAll(requests);
+  for (let index = 0; index < symbols.length; index += 1) {
+    const symbol = symbols[index];
+    try {
+      const response = responses[index];
+      if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+        throw new Error("日足HTTP " + response.getResponseCode());
+      }
+      const data = JSON.parse(response.getContentText());
+      const result = data.chart && data.chart.result && data.chart.result[0];
+      if (!result) throw new Error("日足データなし");
+      quotes[symbol] = quoteFromDailyChartResult(symbol, result);
+    } catch (error) {
+      quotes[symbol] = { error: String(error).replace(/^Error: /, "") };
+    }
+  }
+  return quotes;
+}
+
+function sessionDateKey(timestampSeconds, utcOffsetSeconds) {
+  const adjusted = new Date((Number(timestampSeconds) + Number(utcOffsetSeconds || 0)) * 1000);
+  return adjusted.toISOString().slice(0, 10);
+}
+
+function dailyCloseEntries(result, symbol) {
+  const meta = result.meta || {};
+  const offset = Number(meta.gmtoffset || (isJapanMarketSymbol(symbol) ? 9 * 60 * 60 : 0));
+  const timestamps = result.timestamp || [];
+  const closes = (((result.indicators || {}).quote || [{}])[0].close || []);
+  const entries = [];
+  for (let index = 0; index < Math.min(timestamps.length, closes.length); index += 1) {
+    let close = Number(closes[index]);
+    if (closes[index] === null || closes[index] === undefined) continue;
+    if (!Number.isFinite(close) || close <= 0) throw new Error("日足終値不正");
+    close = Number(close.toFixed(Math.min(8, Math.max(0, Number(meta.priceHint ?? 6)))));
+    const timestamp = Number(timestamps[index]);
+    entries.push({ timestamp: timestamp, close: close, date: sessionDateKey(timestamp, offset) });
+  }
+  return entries.sort((left, right) => left.timestamp - right.timestamp);
+}
+
+function quoteFromDailyChartResult(symbol, result) {
+  const meta = result.meta || {};
+  const entries = dailyCloseEntries(result, symbol);
+  if (entries.length < 2) throw new Error("日足終値不足");
+
+  const offset = Number(meta.gmtoffset || (isJapanMarketSymbol(symbol) ? 9 * 60 * 60 : 0));
+  const regularMarketTime = Number(meta.regularMarketTime);
+  if (!Number.isFinite(regularMarketTime) || regularMarketTime <= 0) throw new Error("株価時刻なし");
+  let quoteSessionDate = sessionDateKey(regularMarketTime, offset);
+  const marketState = String(meta.marketState || "").toUpperCase();
+  let price;
+  let previousCandidates;
+  let quoteTimestamp = regularMarketTime;
+
+  if (!["CLOSED", "PRE", "PREPRE", "POST", "POSTPOST"].includes(marketState)) {
+    price = Number(meta.regularMarketPrice);
+    if (!Number.isFinite(price) || price <= 0) {
+      const sameSession = entries.filter((entry) => entry.date === quoteSessionDate);
+      if (!sameSession.length) throw new Error("取引中現在値なし");
+      price = sameSession[sameSession.length - 1].close;
+    }
+    previousCandidates = entries.filter((entry) => entry.date < quoteSessionDate);
+  } else {
+    const completedSessions = entries.filter((entry) => entry.date === quoteSessionDate);
+    if (!completedSessions.length) throw new Error("確定終値なし");
+    const currentSession = completedSessions[completedSessions.length - 1];
+    price = currentSession.close;
+    if (meta.regularMarketPrice != null && Math.abs(Number(meta.regularMarketPrice) - price) > 0.011) {
+      throw new Error("最終株価と日足終値が不整合です");
+    }
+    quoteSessionDate = currentSession.date;
+    previousCandidates = entries.filter((entry) => entry.date < quoteSessionDate);
+    if (sessionDateKey(regularMarketTime, offset) !== quoteSessionDate) {
+      quoteTimestamp = currentSession.timestamp;
+    }
+  }
+
+  if (!previousCandidates.length) throw new Error("前取引日終値なし");
+  const previousSession = previousCandidates[previousCandidates.length - 1];
+  const previousDates = (result.timestamp || []).map((ts) => sessionDateKey(ts, offset))
+    .filter((date) => date < quoteSessionDate).sort();
+  if (previousDates.length && previousDates[previousDates.length - 1] !== previousSession.date) {
+    throw new Error("前取引日の終値が欠損しています");
+  }
+  const resultQuote = quoteResult(
+    Number(price.toFixed(Math.min(8, Math.max(0, Number(meta.priceHint ?? 6))))),
+    previousSession.close,
+    null,
+    meta.currency || "JPY",
+    new Date(quoteTimestamp * 1000).toISOString(),
+    marketState
+  );
+  resultQuote.quote_session_date = quoteSessionDate;
+  resultQuote.previous_close_session_date = previousSession.date;
+  resultQuote.source = "yahoo_daily_chart";
+  return resultQuote;
 }
 
 function quoteResult(price, previousClose, suppliedChangePercent, currency, quoteTime, marketState) {
+  if (typeof price === "boolean" || typeof previousClose === "boolean") throw new Error("価格不正");
   price = Number(price);
   previousClose = Number(previousClose);
-  if (!Number.isFinite(price) || !Number.isFinite(previousClose) || previousClose <= 0) {
+  if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(previousClose) || previousClose <= 0) {
     throw new Error("価格または前日終値が不正");
   }
   const change = price - previousClose;
-  const changePercent = suppliedChangePercent === null || suppliedChangePercent === undefined
-    ? change / previousClose * 100
-    : suppliedChangePercent;
+  const changePercent = change / previousClose * 100;
   return {
     price: price,
     previous_close: previousClose,
@@ -582,7 +764,10 @@ function yahooJapanQuoteTime(lines) {
   if (priceLabelIndex >= 0) {
     for (let index = priceLabelIndex + 1; index < Math.min(lines.length, priceLabelIndex + 5); index += 1) {
       const match = lines[index].match(/^([0-2]?[0-9]):([0-5][0-9])$/);
-      if (match) return todayJapanTimeIso(Number(match[1]), Number(match[2]));
+      if (match) {
+        const quoteTime = todayJapanTimeIso(Number(match[1]), Number(match[2]));
+        if (quoteTime) return quoteTime;
+      }
       const dateMatch = lines[index].match(/^([0-1]?[0-9])\/([0-3]?[0-9])$/);
       if (dateMatch) return japanDateTimeIso(Number(dateMatch[1]), Number(dateMatch[2]), 15, 30);
     }
@@ -600,6 +785,7 @@ function yahooJapanQuoteTime(lines) {
 function todayJapanTimeIso(hour, minute) {
   const now = new Date();
   const japan = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  if (japan.getUTCDay() === 0 || japan.getUTCDay() === 6 || japan.getUTCHours() < 9) return "";
   const date = [
     japan.getUTCFullYear(),
     String(japan.getUTCMonth() + 1).padStart(2, "0"),
@@ -607,7 +793,7 @@ function todayJapanTimeIso(hour, minute) {
   ].join("-");
   let quoteTime = new Date(date + "T" + String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0") + ":00+09:00");
   if (quoteTime.getTime() > now.getTime() + 10 * 60 * 1000) {
-    quoteTime = new Date(quoteTime.getTime() - 24 * 60 * 60 * 1000);
+    return "";
   }
   return quoteTime.toISOString();
 }
@@ -623,7 +809,7 @@ function japanDateTimeIso(month, day, hour, minute) {
     + String(hour).padStart(2, "0") + ":"
     + String(minute).padStart(2, "0") + ":00+09:00"
   );
-  if (quoteTime.getTime() > now.getTime() + 10 * 60 * 1000) {
+  if (month > japan.getUTCMonth() + 1 || (month === japan.getUTCMonth() + 1 && day > japan.getUTCDate())) {
     year -= 1;
     quoteTime = new Date(
       year + "-"
@@ -633,5 +819,5 @@ function japanDateTimeIso(month, day, hour, minute) {
       + String(minute).padStart(2, "0") + ":00+09:00"
     );
   }
-  return quoteTime.toISOString();
+  return quoteTime > now ? "" : quoteTime.toISOString();
 }
