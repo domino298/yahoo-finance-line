@@ -407,14 +407,12 @@ HTML = """<!doctype html>
       let newestJapanQuoteTime = "";
       let transportFailures = 0;
       const deadline = Date.now() + 180000;
-      for (let index = 0; index < symbols.length; index += batchSize) {
-        if (transportFailures >= 3 || Date.now() >= deadline) {
-          for (const item of symbols.slice(index)) {
-            quotes.set(item.symbol, { error: "通信失敗・時間制限のため更新を中断" });
-            failed += 1;
-          }
-          break;
-        }
+      let nextIndex = 0;
+      async function worker() {
+      while (nextIndex < symbols.length) {
+        if (transportFailures >= 3 || Date.now() >= deadline) break;
+        const index = nextIndex;
+        nextIndex += batchSize;
         const batch = symbols.slice(index, index + batchSize);
         let data = null;
         try {
@@ -456,6 +454,13 @@ HTML = """<!doctype html>
         if (index + batchSize < symbols.length) {
           await new Promise((resolve) => window.setTimeout(resolve, 500));
         }
+      }
+      }
+      await Promise.all(Array.from({ length: Math.min(3, Math.ceil(symbols.length / batchSize)) }, () => worker()));
+      for (const item of symbols) {
+        if (quotes.has(item.symbol)) continue;
+        quotes.set(item.symbol, { error: "通信失敗・時間制限のため更新を中断" });
+        failed += 1;
       }
       for (const portfolio of payload.portfolios || []) {
         for (const item of portfolio.symbols || []) {
