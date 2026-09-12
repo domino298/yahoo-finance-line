@@ -185,3 +185,14 @@ payload.portfolios[0].symbols=Array.from({length:80},(_,i)=>({symbol:`${1000+i}.
 let attempts=0;fetchJsonp=async()=>{attempts++;throw new Error("offline");};
 const result=await refreshLiveQuotes();return {attempts,failed:result.failed,total:result.total};})()''')
         self.assertEqual(result, {"attempts": 3, "failed": 80, "total": 80})
+
+    def test_three_workers_fetch_all_300_symbols_once(self):
+        result = self.run_browser('''(async()=>{
+window.setTimeout=(fn)=>{fn();return 0;};
+payload.portfolios[0].symbols=Array.from({length:300},(_,i)=>({symbol:`${1000+i}.T`,price:100}));
+let active=0,peak=0;const seen=[];
+fetchJsonp=async(url,params)=>{active++;peak=Math.max(peak,active);await Promise.resolve();
+const quotes={};for(const symbol of params.symbols.split(",")){seen.push(symbol);quotes[symbol]={price:105,previous_close:100,quote_time:"2026-09-11T06:30:00Z"};}
+active--;return {quotes};};
+const result=await refreshLiveQuotes();return {peak,requested:seen.length,unique:new Set(seen).size,success:result.success,failed:result.failed};})()''')
+        self.assertEqual(result, {"peak": 3, "requested": 300, "unique": 300, "success": 300, "failed": 0})
