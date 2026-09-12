@@ -171,13 +171,14 @@
       return Number(String(item.rate || "").replace("%", "").replace("+", "")) || 0;
     }
     function rateClass(item) {
-      if (item.error) return "";
+      if (item.error || item.warning) return "";
       if (item.alert_direction === "up" || rateNumber(item) >= Number(payload.default_up_threshold_percent)) return "up";
       if (item.alert_direction === "down" || rateNumber(item) <= Number(payload.default_down_threshold_percent)) return "down";
       return "";
     }
     function judgeText(item) {
       if (item.error) return item.price === "" || item.price === undefined ? "取得失敗" : "取得失敗（前回値）";
+      if (item.warning) return item.warning;
       const kind = rateClass(item);
       if (kind === "up") return "値上がり通知対象";
       if (kind === "down") return "値下がり通知対象";
@@ -239,6 +240,7 @@
         for (const [index, value] of cells.entries()) {
           const td = document.createElement("td");
           td.textContent = value;
+          if (index === 3) td.title = `株価時点: ${formatDateTime(item.quote_time) || "不明"}`;
           if (index === 0) td.className = "symbol";
           if ([4, 5, 6].includes(index)) td.className = kind || (item.error && index >= 5 ? "error" : "muted");
           tr.appendChild(td);
@@ -320,17 +322,15 @@
       return `${sign}${value.toFixed(2)}%`;
     }
     function normalizeQuote(quote) {
+      if (quote.price === null || quote.price === "" || typeof quote.price === "boolean" || typeof quote.previous_close === "boolean") throw new Error("現在値がありません");
       const price = Number(quote.price);
       const previousClose = Number(quote.previous_close);
-      if (!Number.isFinite(price) || !Number.isFinite(previousClose) || previousClose === 0) {
+      if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(previousClose) || previousClose <= 0) {
         throw new Error("価格または前日終値が不正です");
       }
       const change = price - previousClose;
       const calculatedPercent = change / previousClose * 100;
-      const sourcePercent = Number(quote.change_percent);
-      const changePercent = Number.isFinite(sourcePercent) && Math.abs(sourcePercent - calculatedPercent) < 0.05
-        ? sourcePercent
-        : calculatedPercent;
+      const changePercent = calculatedPercent;
       return {
         ...quote,
         price,
@@ -362,7 +362,7 @@
         const timeout = window.setTimeout(() => {
           cleanup();
           reject(new Error("中継タイムアウト"));
-        }, 90000);
+        }, params.action === "portfolios" ? 45000 : 30000);
         function cleanup() {
           window.clearTimeout(timeout);
           delete window[callbackName];
@@ -394,16 +394,28 @@
       let failed = 0;
       let newestQuoteTime = "";
       let newestJapanQuoteTime = "";
+      let transportFailures = 0;
+      const deadline = Date.now() + 180000;
       for (let index = 0; index < symbols.length; index += batchSize) {
+        if (transportFailures >= 3 || Date.now() >= deadline) {
+          for (const item of symbols.slice(index)) {
+            quotes.set(item.symbol, { error: "通信失敗・時間制限のため更新を中断" });
+            failed += 1;
+          }
+          break;
+        }
         const batch = symbols.slice(index, index + batchSize);
         let data = null;
         try {
           data = await fetchJsonp(LIVE_PROXY_URL, { symbols: batch.map((item) => item.symbol).join(",") });
+          if (!data || !data.quotes) throw new Error("中継の応答が不正です");
+          transportFailures = 0;
         } catch (error) {
+          transportFailures += 1;
           data = { quotes: {} };
         }
         for (const item of batch) {
-          let quote = data.quotes?.[item.symbol] || { error: "取得失敗" };
+          let quote = data?.quotes?.[item.symbol] || { error: "取得失敗" };
           if (!quote.error) {
             try {
               quote = normalizeQuote(quote);
@@ -452,15 +464,21 @@
           item.currency = quote.currency || item.currency || "";
           item.quote_time = quote.quote_time || "";
           item.market_state = quote.market_state || "";
+          item.warning = quote.warning || "";
           item.alert_direction = alertDirection(item);
           item.error = "";
         }
       }
       payload.generated_at = new Date().toISOString();
-      payload.quote_time = newestJapanQuoteTime || newestQuoteTime || payload.quote_time || payload.generated_at;
+      payload.quote_time = newestJapanQuoteTime || newestQuoteTime || payload.quote_time || "";
       return { success, failed, total: symbols.length, quote_time: payload.quote_time };
     }
     async function refreshData() {
+      if (els.refreshButton.disabled) return;
+      if (!payload) {
+        await loadInitialData();
+        return;
+      }
       const previousFilter = currentFilter;
       const previousPortfolioId = currentPortfolioId;
       els.refreshButton.disabled = true;
@@ -496,7 +514,7 @@
             ? previousPortfolioId
             : (payload.portfolios?.[0]?.id ?? null);
           els.statusText.textContent = LIVE_PROXY_URL
-            ? `リアルタイム取得失敗 / 公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`
+            ? `取得失敗 / 前回の株価時点: ${formatDateTime(payload.quote_time) || "不明"} / 更新試行: ${formatDateTime(new Date())}`
             : `公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
           render();
         } catch (fallbackError) {
@@ -514,29 +532,14 @@
         buildRows();
         currentPortfolioId = payload.portfolios?.[0]?.id ?? null;
         els.app.hidden = false;
-        els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
+        els.statusText.textContent = `株価時点（日本株）: ${formatDateTime(payload.quote_time) || "不明"}`;
         render();
-        els.statusText.textContent = "Yahoo銘柄・タブ同期中";
-        try {
-          const portfolioSync = await syncYahooPortfolioList();
-          let addedResult = null;
-          if (portfolioSync.addedSymbols.length) {
-            els.statusText.textContent = `新規銘柄の株価取得中: ${portfolioSync.addedSymbols.length}件`;
-            addedResult = await refreshLiveQuotes(portfolioSync.addedSymbols);
-            buildRows();
-            render();
-          }
-          const changeText = portfolioSync.added || portfolioSync.removed
-            ? ` / 追加 ${portfolioSync.added} / 削除 ${portfolioSync.removed}`
-            : "";
-          const quoteText = addedResult ? ` / 新規株価 OK ${addedResult.success} / 失敗 ${addedResult.failed}` : "";
-          els.statusText.textContent = `Yahoo${portfolioSync.syncStatus === "live" ? "同期済み" : "前回同期リスト"}${changeText}${quoteText} / 株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
-        } catch (syncError) {
-          els.statusText.textContent = `Yahoo同期未設定または期限切れ / 公開済みリスト / 株価時点（日本株）: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
-        }
         els.refreshButton.disabled = false;
+        await refreshData();
       } catch (error) {
         els.statusText.textContent = "データ読み込み失敗";
+      } finally {
+        els.refreshButton.disabled = false;
       }
     }
     els.refreshButton.addEventListener("click", refreshData);
