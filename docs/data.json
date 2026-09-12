@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T12:59:44.309307+00:00",
+  "generated_at": "2026-09-12T15:03:47.796225+00:00",
   "quote_time": "2026-09-11T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -23,6 +23,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -36,6 +37,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -49,6 +51,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -62,19 +65,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "9434.T",
           "name": "ソフトバンク(株)",
           "price": 246.9,
-          "previous_close": 243.1999969482422,
+          "previous_close": 243.2,
           "change": "+3.70",
           "rate": "+1.52%",
-          "change_percent": 1.5213828528728366,
+          "change_percent": 1.5213815789473757,
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -88,6 +93,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -101,6 +107,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -114,6 +121,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -127,6 +135,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -140,6 +149,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -153,6 +163,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -166,6 +177,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -179,6 +191,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -192,6 +205,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -205,6 +219,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -218,6 +233,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -231,6 +247,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -244,6 +261,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -257,6 +275,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -270,6 +289,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T03:43:39+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -283,6 +303,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -296,6 +317,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -309,6 +331,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -322,6 +345,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -335,6 +359,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -348,6 +373,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -361,6 +387,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -374,6 +401,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -387,6 +415,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -400,6 +429,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -413,6 +443,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -426,6 +457,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -439,7 +471,8 @@
           "currency": "",
           "quote_time": "",
           "alert_direction": null,
-          "error": "HTTP 404 from https://query1.finance.yahoo.com/v8/finance/chart/4748.T?range=1d&interval=1m&includePrePost=false: {\"chart\":{\"result\":null,\"error\":{\"code\":\"Not Found\",\"description\":\"No data found, symbol may be delisted\"}}}"
+          "warning": "",
+          "error": "Missing Yahoo Japan history data for 4748.T"
         },
         {
           "symbol": "6381.T",
@@ -452,6 +485,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -465,6 +499,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -478,6 +513,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -491,6 +527,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -504,6 +541,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -517,6 +555,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -530,6 +569,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -543,6 +583,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -556,6 +597,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -578,6 +620,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -591,6 +634,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -604,6 +648,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -617,6 +662,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -630,6 +676,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -643,6 +690,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -656,6 +704,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -669,6 +718,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -682,6 +732,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -695,20 +746,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "7250.T",
           "name": "太平洋工業(株)",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 3015.0,
+          "previous_close": 3020.0,
+          "change": "-5.00",
+          "rate": "-0.17%",
+          "change_percent": -0.16556291390728478,
+          "currency": "JPY",
+          "quote_time": "2026-04-10T06:30:00+00:00",
           "alert_direction": null,
-          "error": "HTTP 404 from https://query1.finance.yahoo.com/v8/finance/chart/7250.T?range=1d&interval=1m&includePrePost=false: {\"chart\":{\"result\":null,\"error\":{\"code\":\"Not Found\",\"description\":\"No data found, symbol may be delisted\"}}}"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "6345.T",
@@ -721,6 +774,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -734,6 +788,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -747,6 +802,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -760,6 +816,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -773,6 +830,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -786,6 +844,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -799,6 +858,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -812,6 +872,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -825,6 +886,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -838,6 +900,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -851,6 +914,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -864,6 +928,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -877,6 +942,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -890,6 +956,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -903,6 +970,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -916,32 +984,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "7817.T",
           "name": "パラマウントベッドホールディングス(株)",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
-          "alert_direction": null,
-          "error": "HTTP 404 from https://query1.finance.yahoo.com/v8/finance/chart/7817.T?range=1d&interval=1m&includePrePost=false: {\"chart\":{\"result\":null,\"error\":{\"code\":\"Not Found\",\"description\":\"No data found, symbol may be delisted\"}}}"
-        },
-        {
-          "symbol": "8593.T",
-          "name": "三菱ＨＣキャピタル(株)",
-          "price": 1382.0,
-          "previous_close": 1380.5,
-          "change": "+1.50",
-          "rate": "+0.11%",
-          "change_percent": 0.10865628395508872,
+          "price": 3515.0,
+          "previous_close": 3515.0,
+          "change": "+0.00",
+          "rate": "+0.00%",
+          "change_percent": 0.0,
           "currency": "JPY",
-          "quote_time": "2026-09-11T06:30:00+00:00",
+          "quote_time": "2026-02-04T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
           "error": ""
         },
         {
@@ -955,6 +1012,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
+          "error": ""
+        },
+        {
+          "symbol": "8593.T",
+          "name": "三菱ＨＣキャピタル(株)",
+          "price": 1382.0,
+          "previous_close": 1380.5,
+          "change": "+1.50",
+          "rate": "+0.11%",
+          "change_percent": 0.10865628395508872,
+          "currency": "JPY",
+          "quote_time": "2026-09-11T06:30:00+00:00",
+          "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -968,6 +1040,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -981,6 +1054,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -994,6 +1068,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1007,6 +1082,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1020,6 +1096,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1033,6 +1110,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -1055,6 +1133,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1068,6 +1147,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1081,6 +1161,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1094,6 +1175,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1107,6 +1189,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1120,20 +1203,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "2374.T",
           "name": "セントケア・ホールディング(株)",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 1212.0,
+          "previous_close": 1212.0,
+          "change": "+0.00",
+          "rate": "+0.00%",
+          "change_percent": 0.0,
+          "currency": "JPY",
+          "quote_time": "2026-03-12T06:30:00+00:00",
           "alert_direction": null,
-          "error": "HTTP 404 from https://query1.finance.yahoo.com/v8/finance/chart/2374.T?range=1d&interval=1m&includePrePost=false: {\"chart\":{\"result\":null,\"error\":{\"code\":\"Not Found\",\"description\":\"No data found, symbol may be delisted\"}}}"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "3166.T",
@@ -1146,6 +1231,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1159,6 +1245,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1172,6 +1259,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1185,6 +1273,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1198,6 +1287,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1211,6 +1301,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1224,6 +1315,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1237,6 +1329,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1250,6 +1343,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1263,6 +1357,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1276,6 +1371,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1289,6 +1385,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1302,6 +1399,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1315,6 +1413,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1328,6 +1427,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1341,6 +1441,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1354,6 +1455,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1367,6 +1469,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1380,6 +1483,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1393,6 +1497,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1406,6 +1511,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1419,6 +1525,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1432,6 +1539,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:24:31+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1445,6 +1553,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1458,6 +1567,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1471,6 +1581,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1484,6 +1595,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1497,6 +1609,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1510,6 +1623,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1523,6 +1637,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T05:44:02+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1536,6 +1651,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1549,6 +1665,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1562,6 +1679,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1575,6 +1693,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1588,6 +1707,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1601,6 +1721,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1614,6 +1735,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1627,6 +1749,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1640,6 +1763,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1653,6 +1777,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -1675,6 +1800,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1688,6 +1814,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1701,6 +1828,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1714,6 +1842,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1727,6 +1856,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1740,6 +1870,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -1762,6 +1893,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1775,6 +1907,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1788,6 +1921,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1801,6 +1935,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1814,6 +1949,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1827,6 +1963,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1840,6 +1977,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1853,6 +1991,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1866,6 +2005,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1879,6 +2019,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1892,6 +2033,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -1914,6 +2056,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1927,6 +2070,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1940,6 +2084,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1953,6 +2098,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1966,6 +2112,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1979,6 +2126,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -1992,6 +2140,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2005,6 +2154,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2018,6 +2168,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2031,6 +2182,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2044,6 +2196,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2057,6 +2210,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2070,6 +2224,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2083,6 +2238,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2096,6 +2252,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2109,6 +2266,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T03:37:02+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2122,6 +2280,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2135,6 +2294,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T05:32:05+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2148,6 +2308,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2161,6 +2322,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2174,6 +2336,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2187,6 +2350,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2200,19 +2364,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "8931224C",
           "name": "SBI・S・米国高配当株式ファンド(年4回決算型)",
-          "price": 12331.0,
-          "previous_close": 12447.0,
-          "change": "-116.00",
-          "rate": "-0.93%",
-          "change_percent": -0.93,
+          "price": 12369.0,
+          "previous_close": 12331.0,
+          "change": "+38.00",
+          "rate": "+0.31%",
+          "change_percent": 0.30816640986132515,
           "currency": "JPY",
-          "quote_time": "2026-09-10T06:30:00+00:00",
+          "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2226,6 +2392,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -2248,6 +2415,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2261,6 +2429,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2274,6 +2443,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2287,6 +2457,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2300,6 +2471,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2313,6 +2485,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2326,6 +2499,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2339,6 +2513,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2352,6 +2527,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2365,6 +2541,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2378,6 +2555,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2391,6 +2569,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2404,6 +2583,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2417,6 +2597,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2430,6 +2611,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2443,6 +2625,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2456,6 +2639,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2469,6 +2653,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2482,6 +2667,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2495,6 +2681,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2508,6 +2695,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2521,6 +2709,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2534,6 +2723,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2547,6 +2737,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2560,6 +2751,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2573,6 +2765,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": "down",
+          "warning": "",
           "error": ""
         },
         {
@@ -2586,6 +2779,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2599,6 +2793,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2612,6 +2807,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2625,6 +2821,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2638,6 +2835,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2651,6 +2849,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2664,6 +2863,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2677,6 +2877,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2690,6 +2891,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2703,6 +2905,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2716,20 +2919,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "4659.T",
           "name": "(株)エイジス",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 4420.0,
+          "previous_close": 4420.0,
+          "change": "+0.00",
+          "rate": "+0.00%",
+          "change_percent": 0.0,
+          "currency": "JPY",
+          "quote_time": "2026-06-18T06:30:00+00:00",
           "alert_direction": null,
-          "error": "HTTP 404 from https://query1.finance.yahoo.com/v8/finance/chart/4659.T?range=1d&interval=1m&includePrePost=false: {\"chart\":{\"result\":null,\"error\":{\"code\":\"Not Found\",\"description\":\"No data found, symbol may be delisted\"}}}"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "3333.T",
@@ -2742,6 +2947,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2755,6 +2961,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2768,6 +2975,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2781,6 +2989,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2794,6 +3003,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2807,6 +3017,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2820,6 +3031,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2833,6 +3045,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2846,6 +3059,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2859,6 +3073,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2872,6 +3087,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2885,6 +3101,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -2907,6 +3124,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2920,6 +3138,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2933,6 +3152,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2946,20 +3166,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "3924.T",
           "name": "(株)ランドコンピュータ",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 915.0,
+          "previous_close": 909.0,
+          "change": "+6.00",
+          "rate": "+0.66%",
+          "change_percent": 0.6600660066006601,
+          "currency": "JPY",
+          "quote_time": "2026-03-27T06:30:00+00:00",
           "alert_direction": null,
-          "error": "HTTP 404 from https://query1.finance.yahoo.com/v8/finance/chart/3924.T?range=1d&interval=1m&includePrePost=false: {\"chart\":{\"result\":null,\"error\":{\"code\":\"Not Found\",\"description\":\"No data found, symbol may be delisted\"}}}"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "5184.T",
@@ -2972,6 +3194,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2985,6 +3208,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -2998,6 +3222,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3011,6 +3236,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3024,6 +3250,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3037,6 +3264,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3050,6 +3278,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3063,6 +3292,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3076,6 +3306,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3089,20 +3320,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "4171.T",
           "name": "(株)グローバルインフォメーション",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 1665.0,
+          "previous_close": 1665.0,
+          "change": "+0.00",
+          "rate": "+0.00%",
+          "change_percent": 0.0,
+          "currency": "JPY",
+          "quote_time": "2026-08-12T06:30:00+00:00",
           "alert_direction": null,
-          "error": "Missing daily previous close data for 4171.T"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "6113.T",
@@ -3115,6 +3348,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3128,6 +3362,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3141,20 +3376,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "4171.T",
           "name": "(株)グローバルインフォメーション",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 1665.0,
+          "previous_close": 1665.0,
+          "change": "+0.00",
+          "rate": "+0.00%",
+          "change_percent": 0.0,
+          "currency": "JPY",
+          "quote_time": "2026-08-12T06:30:00+00:00",
           "alert_direction": null,
-          "error": "Missing daily previous close data for 4171.T"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "9163.T",
@@ -3167,6 +3404,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3180,6 +3418,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3193,6 +3432,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3206,6 +3446,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3219,19 +3460,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "5401.T",
           "name": "日本製鉄(株)",
           "price": 686.4,
-          "previous_close": 690.5999755859375,
+          "previous_close": 690.6,
           "change": "-4.20",
           "rate": "-0.61%",
-          "change_percent": -0.6081632977722111,
+          "change_percent": -0.608166811468295,
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3245,6 +3488,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3254,10 +3498,11 @@
           "previous_close": 4990.0,
           "change": "-20.00",
           "rate": "-0.40%",
-          "change_percent": -0.4,
+          "change_percent": -0.4008016032064128,
           "currency": "JPY",
-          "quote_time": "2026-09-11T06:21:00+00:00",
+          "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3271,6 +3516,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3284,6 +3530,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3297,6 +3544,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3310,6 +3558,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3323,6 +3572,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3336,6 +3586,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3349,6 +3600,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3362,6 +3614,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3375,6 +3628,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3388,6 +3642,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3401,6 +3656,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T03:41:43+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3414,6 +3670,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3427,6 +3684,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3440,6 +3698,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3453,6 +3712,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3466,6 +3726,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3479,6 +3740,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3492,6 +3754,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3505,6 +3768,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3518,6 +3782,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3531,6 +3796,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -3553,6 +3819,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3566,6 +3833,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3579,6 +3847,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3592,6 +3861,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3605,6 +3875,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3618,6 +3889,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3631,6 +3903,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3644,6 +3917,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3657,6 +3931,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3670,6 +3945,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3683,6 +3959,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3696,6 +3973,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3709,6 +3987,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3722,6 +4001,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3735,6 +4015,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3748,6 +4029,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3761,6 +4043,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3774,6 +4057,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3787,6 +4071,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3800,6 +4085,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3813,6 +4099,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3826,6 +4113,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3839,6 +4127,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3852,6 +4141,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3865,6 +4155,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3878,6 +4169,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": "down",
+          "warning": "",
           "error": ""
         },
         {
@@ -3891,6 +4183,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3904,6 +4197,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3917,6 +4211,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3930,6 +4225,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3943,6 +4239,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3956,6 +4253,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3969,6 +4267,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3982,6 +4281,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -3995,6 +4295,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4008,6 +4309,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T05:27:25+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4021,6 +4323,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4034,6 +4337,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -4056,6 +4360,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4069,6 +4374,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4082,6 +4388,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4095,20 +4402,22 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "5903.T",
           "name": "ＳＨＩＮＰＯ(株)",
-          "price": "",
-          "previous_close": "",
-          "change": "",
-          "rate": "",
-          "change_percent": null,
-          "currency": "",
-          "quote_time": "",
+          "price": 1685.0,
+          "previous_close": 1685.0,
+          "change": "+0.00",
+          "rate": "+0.00%",
+          "change_percent": 0.0,
+          "currency": "JPY",
+          "quote_time": "2026-07-21T06:30:00+00:00",
           "alert_direction": null,
-          "error": "Missing daily previous close data for 5903.T"
+          "warning": "履歴終値（現在値の取得失敗時の参考値）",
+          "error": ""
         },
         {
           "symbol": "8059.T",
@@ -4121,6 +4430,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4134,6 +4444,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4147,6 +4458,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4160,6 +4472,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4173,6 +4486,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4186,6 +4500,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4199,6 +4514,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4212,6 +4528,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4225,6 +4542,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4238,6 +4556,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4251,6 +4570,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4264,6 +4584,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4277,6 +4598,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4290,6 +4612,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4303,6 +4626,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4316,6 +4640,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4329,6 +4654,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -4351,6 +4677,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4364,6 +4691,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4377,6 +4705,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4390,6 +4719,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4403,6 +4733,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4416,6 +4747,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4429,19 +4761,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "9432.T",
           "name": "ＮＴＴ(株)",
           "price": 175.7,
-          "previous_close": 175.1999969482422,
+          "previous_close": 175.2,
           "change": "+0.50",
           "rate": "+0.29%",
-          "change_percent": 0.2853898746958955,
+          "change_percent": 0.2853881278538813,
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4455,6 +4789,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4468,6 +4803,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4481,6 +4817,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4494,6 +4831,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4507,6 +4845,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4520,6 +4859,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4533,6 +4873,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4546,6 +4887,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4559,6 +4901,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4572,6 +4915,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4585,6 +4929,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4598,6 +4943,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4611,6 +4957,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4624,6 +4971,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4637,6 +4985,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4650,6 +4999,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T05:32:05+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4663,6 +5013,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4676,6 +5027,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4689,6 +5041,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4702,6 +5055,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4715,6 +5069,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4728,6 +5083,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4741,6 +5097,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4754,6 +5111,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4767,6 +5125,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4780,6 +5139,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4793,6 +5153,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4806,6 +5167,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4819,6 +5181,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4832,6 +5195,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -4854,6 +5218,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4867,6 +5232,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4880,6 +5246,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4893,6 +5260,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4906,6 +5274,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4919,6 +5288,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4932,6 +5302,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4945,6 +5316,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4958,6 +5330,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4971,6 +5344,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4984,6 +5358,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -4997,6 +5372,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5010,6 +5386,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
@@ -5032,6 +5409,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5045,6 +5423,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5054,10 +5433,11 @@
           "previous_close": 2725.0,
           "change": "+8.00",
           "rate": "+0.29%",
-          "change_percent": 0.29,
+          "change_percent": 0.29357798165137616,
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5071,6 +5451,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5084,6 +5465,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5097,6 +5479,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5110,6 +5493,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": "down",
+          "warning": "",
           "error": ""
         },
         {
@@ -5123,6 +5507,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5136,6 +5521,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5149,6 +5535,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5162,6 +5549,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5175,6 +5563,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5184,10 +5573,11 @@
           "previous_close": 5020.0,
           "change": "+20.00",
           "rate": "+0.40%",
-          "change_percent": 0.4,
+          "change_percent": 0.398406374501992,
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5201,6 +5591,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5210,10 +5601,11 @@
           "previous_close": 1903.0,
           "change": "-51.00",
           "rate": "-2.68%",
-          "change_percent": -2.68,
+          "change_percent": -2.6799789805570153,
           "currency": "JPY",
-          "quote_time": "2026-09-11T06:24:00+00:00",
+          "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5227,6 +5619,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5240,6 +5633,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5253,6 +5647,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5266,6 +5661,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5279,19 +5675,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "5401.T",
           "name": "日本製鉄(株)",
           "price": 686.4,
-          "previous_close": 690.5999755859375,
+          "previous_close": 690.6,
           "change": "-4.20",
           "rate": "-0.61%",
-          "change_percent": -0.6081632977722111,
+          "change_percent": -0.608166811468295,
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5305,6 +5703,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5318,6 +5717,7 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": null,
+          "warning": "",
           "error": ""
         },
         {
@@ -5331,19 +5731,21 @@
           "currency": "JPY",
           "quote_time": "2026-09-11T06:30:00+00:00",
           "alert_direction": "down",
+          "warning": "",
           "error": ""
         },
         {
           "symbol": "KXIAY",
           "name": "キオクシアホールディングス(株)",
-          "price": 35.59,
-          "previous_close": 37.54,
-          "change": "-1.95",
-          "rate": "-5.19%",
-          "change_percent": -5.1944592434736165,
+          "price": 35.45,
+          "previous_close": 35.59,
+          "change": "-0.14",
+          "rate": "-0.39%",
+          "change_percent": -0.393368923855017,
           "currency": "USD",
-          "quote_time": "2026-09-10T20:00:00+00:00",
-          "alert_direction": "down",
+          "quote_time": "2026-09-11T20:00:00+00:00",
+          "alert_direction": null,
+          "warning": "",
           "error": ""
         }
       ]
