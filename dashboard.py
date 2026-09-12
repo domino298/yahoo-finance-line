@@ -321,7 +321,7 @@ INDEX_HTML = """<!doctype html>
     }
 
     function classifyRate(item, rate) {
-      if (item.error) return '';
+      if (item.error || item.warning) return '';
       const value = rateNumber(rate);
       const upLimit = Number(item.up_threshold_percent ?? currentConfig.default_up_threshold_percent);
       const downLimit = Number(item.down_threshold_percent ?? currentConfig.default_down_threshold_percent);
@@ -454,7 +454,7 @@ INDEX_HTML = """<!doctype html>
           tr.children[4].className = rateClass;
           tr.children[5].textContent = item.rate || item.error || '-';
           tr.children[5].className = rateClass;
-          tr.children[6].textContent = item.error ? '取得失敗（前回値）' : judgeText(rateClass);
+          tr.children[6].textContent = item.error ? '取得失敗（前回値）' : (item.warning || judgeText(rateClass));
           tr.children[6].className = item.error ? 'alert' : rateClass || 'muted';
         } else if (item.error) {
           tr.children[3].textContent = '取得失敗';
@@ -508,6 +508,7 @@ INDEX_HTML = """<!doctype html>
             symbolItem.rate = `${sign}${item.change_percent.toFixed(2)}%`;
             symbolItem.change_percent = item.change_percent;
             symbolItem.alert_direction = item.alert_direction;
+            symbolItem.warning = item.warning || '';
             symbolItem.error = '';
           }
         }
@@ -526,7 +527,7 @@ INDEX_HTML = """<!doctype html>
           const downLimit = Number(currentConfig.default_down_threshold_percent);
           const isAlertUp = item.change_percent >= upLimit;
           const isAlertDown = item.change_percent <= downLimit;
-          const rateClass = isAlertUp ? 'up' : isAlertDown ? 'down' : '';
+          const rateClass = item.warning ? '' : isAlertUp ? 'up' : isAlertDown ? 'down' : '';
           tr.children[3].textContent = `${yen.format(item.price)} ${item.currency || ''}`.trim();
           tr.children[4].textContent = `${sign}${yen.format(item.price - item.previous_close)}`;
           tr.children[4].className = rateClass;
@@ -539,7 +540,7 @@ INDEX_HTML = """<!doctype html>
             tr.children[6].textContent = '値下がり通知対象';
             tr.children[6].className = 'down';
           } else {
-            tr.children[6].textContent = '通知なし';
+            tr.children[6].textContent = item.warning || '通知なし';
             tr.children[6].className = 'muted';
           }
         }
@@ -728,7 +729,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         symbols = config.get("symbols", [])
         offset = max(0, int((query.get("offset") or ["0"])[0]))
         limit_value = (query.get("limit") or [""])[0]
-        limit = int(limit_value) if limit_value else len(symbols)
+        limit = max(1, int(limit_value)) if limit_value else max(1, len(symbols))
         selected_symbols = symbols[offset : offset + limit]
         quotes = []
         for item in selected_symbols:
@@ -747,9 +748,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
                         "change_percent": quote.change_percent,
                         "currency": quote.currency,
                         "alert_direction": alert.direction if alert else None,
+                        "warning": quote.warning,
                     }
                 )
-            except (RuntimeError, urllib.error.URLError) as exc:
+            except (RuntimeError, ValueError, TypeError, KeyError, urllib.error.URLError) as exc:
                 quotes.append({"symbol": symbol, "error": str(exc)})
         next_offset = offset + limit
         json_response(
