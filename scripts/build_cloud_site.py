@@ -373,7 +373,7 @@ HTML = """<!doctype html>
         const timeout = window.setTimeout(() => {
           cleanup();
           reject(new Error("中継タイムアウト"));
-        }, params.action === "portfolios" ? 45000 : 30000);
+        }, params.action === "portfolios" ? 45000 : 60000);
         function cleanup() {
           window.clearTimeout(timeout);
           delete window[callbackName];

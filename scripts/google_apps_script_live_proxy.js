@@ -51,7 +51,7 @@ function outputPayload(payload, callback) {
   const json = JSON.stringify(payload);
   if (/^[A-Za-z_$][0-9A-Za-z_$]*(\.[A-Za-z_$][0-9A-Za-z_$]*)*$/.test(callback)) {
     return ContentService
-      .createTextOutput(callback + "(" + json + ");")
+      .createTextOutput("typeof " + callback + " === 'function' && " + callback + "(" + json + ");")
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService
