@@ -117,6 +117,17 @@ class PriceAuditTest(unittest.TestCase):
         })()''')
         self.assertEqual(result["7203.T"]["price"], 105)
 
+    def test_late_jsonp_response_does_not_throw_after_callback_cleanup(self):
+        result = self.js('''(() => {
+          ContentService={MimeType:{JAVASCRIPT:"js"},createTextOutput:text=>({setMimeType:()=>text})};
+          const code=outputPayload({success:1},"expiredQuoteCallback");
+          eval(code);
+          let received=0;globalThis.expiredQuoteCallback=data=>{received=data.success;};
+          eval(code);delete globalThis.expiredQuoteCallback;
+          return received;
+        })()''')
+        self.assertEqual(result, 1)
+
     def test_dry_run_does_not_change_notification_cooldown(self):
         with tempfile.TemporaryDirectory() as directory:
             state_path = Path(directory) / "state.json"
