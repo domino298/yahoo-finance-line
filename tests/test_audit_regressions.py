@@ -143,6 +143,38 @@ class PriceAuditTest(unittest.TestCase):
 
 
 class BrowserLogicAuditTest(unittest.TestCase):
+    def test_closing_counts_survive_refresh_failure_only_outside_trading_hours(self):
+        scenarios = [
+            ("2026-09-11T10:00:00Z", 105, "offline", "", "up"),
+            ("2026-09-12T10:00:00Z", 95, "offline", "", "down"),
+            ("2026-09-14T00:00:00Z", 105, "offline", "", ""),
+            ("2026-09-14T00:00:00Z", 105, "", "", "up"),
+            ("2026-09-12T10:00:00Z", 105, "", "履歴終値", "up"),
+            ("2026-09-12T10:00:00Z", 104.99, "", "", ""),
+        ]
+        for now, price, error, warning, expected in scenarios:
+            with self.subTest(now=now, price=price, error=error, warning=warning):
+                item = {"symbol": "7203.T", "price": price, "previous_close": 100,
+                        "quote_time": "2026-09-11T06:30:00Z", "error": error,
+                        "warning": warning, "change_percent": None, "alert_direction": "up"}
+                result = self.run_browser('''(() => {
+const OriginalDate=Date;Date=class extends OriginalDate {constructor(...a){super(...(a.length?a:[NOW]));}};
+payload.quote_time="2026-09-11T06:30:00Z";
+return rateClass(ITEM);})()'''.replace("NOW", json.dumps(now)).replace("ITEM", json.dumps(item)))
+                self.assertEqual(result, expected)
+
+    def test_undated_or_invalid_cached_price_cannot_enter_closing_counts(self):
+        result = self.run_browser('''(() => {
+const item={symbol:"7203.T",price:105,previous_close:100,error:"offline"};
+return [closingValueAvailable(item),closingValueAvailable({...item,quote_time:"invalid"}),closingValueAvailable({...item,previous_close:null,quote_time:"2026-09-11T06:30:00Z"})];})()''')
+        self.assertEqual(result, [False, False, False])
+
+    def test_old_closing_date_is_not_mixed_with_latest_session(self):
+        result = self.run_browser('''(() => {
+payload.quote_time="2026-09-14T06:30:00Z";
+return closingValueAvailable({symbol:"7203.T",price:105,previous_close:100,error:"offline",quote_time:"2026-09-11T06:30:00Z"},new Date("2026-09-14T10:00:00Z"));})()''')
+        self.assertFalse(result)
+
     def run_browser(self, scenario):
         script = HTML.split("<script>", 1)[1].split("</script>", 1)[0]
         script = script.replace("    loadInitialData();", "    globalThis.ready = loadInitialData();")
