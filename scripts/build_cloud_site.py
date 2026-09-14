@@ -203,7 +203,7 @@ HTML = """<!doctype html>
       return "";
     }
     function judgeText(item) {
-      if (item.error) return item.price === "" || item.price === undefined ? "取得失敗" : "取得失敗（前回値）";
+      if (item.error) return item.price === "" || item.price === undefined ? "取得失敗" : "前回値";
       if (item.warning) return item.warning;
       const kind = rateClass(item);
       if (kind === "up") return "値上がり通知対象";
