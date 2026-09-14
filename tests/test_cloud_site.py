@@ -10,7 +10,8 @@ class CloudSiteBuildTest(unittest.TestCase):
     def test_refresh_is_manual_and_failure_values_are_preserved(self):
         self.assertNotIn("setInterval(", HTML)
         self.assertNotIn('item.price = "";', HTML)
-        self.assertIn("取得失敗（前回値）", HTML)
+        self.assertIn(' : "前回値"', HTML)
+        self.assertNotIn("取得失敗（前回値）", HTML)
 
     def test_status_uses_japan_quote_time(self):
         self.assertIn("newestJapanQuoteTime", HTML)
