@@ -177,14 +177,29 @@ HTML = """<!doctype html>
       return response.json();
     }
     function rateNumber(item) {
-      if (item.error) return 0;
-      if (typeof item.change_percent === "number") return item.change_percent;
-      return Number(String(item.rate || "").replace("%", "").replace("+", "")) || 0;
+      try { return normalizeQuote(item).change_percent; }
+      catch (_) { return NaN; }
+    }
+    function closingValueAvailable(item, now = new Date()) {
+      if (!/\.(T|N|S|F)$/i.test(item.symbol) && !/^[0-9A-Z]{8}$/i.test(item.symbol)) return false;
+      if (!Number.isFinite(rateNumber(item)) || !item.quote_time) return false;
+      const quoteTime = new Date(item.quote_time);
+      if (!Number.isFinite(quoteTime.getTime()) || quoteTime > now) return false;
+      const japan = new Date(now.getTime() + 32400000);
+      const minutes = japan.getUTCHours() * 60 + japan.getUTCMinutes();
+      const closed = [0, 6].includes(japan.getUTCDay()) || minutes < 540 || minutes >= 930;
+      const quoteJapan = new Date(quoteTime.getTime() + 32400000);
+      const referenceTime = new Date(payload.quote_time || item.quote_time);
+      if (!Number.isFinite(referenceTime.getTime())) return false;
+      const referenceJapan = new Date(referenceTime.getTime() + 32400000);
+      if (quoteJapan.toISOString().slice(0, 10) !== referenceJapan.toISOString().slice(0, 10)) return false;
+      const atClose = quoteJapan.getUTCHours() * 60 + quoteJapan.getUTCMinutes() >= 930;
+      return closed && (item.market_state === "CLOSED" || atClose);
     }
     function rateClass(item) {
-      if (item.error || item.warning) return "";
-      if (item.alert_direction === "up" || rateNumber(item) >= Number(payload.default_up_threshold_percent)) return "up";
-      if (item.alert_direction === "down" || rateNumber(item) <= Number(payload.default_down_threshold_percent)) return "down";
+      if ((item.error || item.warning) && !closingValueAvailable(item)) return "";
+      if (rateNumber(item) >= Number(item.up_threshold_percent ?? payload.default_up_threshold_percent)) return "up";
+      if (rateNumber(item) <= Number(item.down_threshold_percent ?? payload.default_down_threshold_percent)) return "down";
       return "";
     }
     function judgeText(item) {
@@ -211,8 +226,10 @@ HTML = """<!doctype html>
     function renderTabs() {
       const upCount = rows.filter((item) => rateClass(item) === "up").length;
       const downCount = rows.filter((item) => rateClass(item) === "down").length;
+      const retainedClose = rows.some((item) => (item.error || item.warning) && rateClass(item));
       els.upCount.textContent = upCount;
       els.downCount.textContent = downCount;
+      els.upCount.title = els.downCount.title = retainedClose ? "確認済み終値を含む（各銘柄の株価時点を参照）" : "前営業日の終値との比較";
       els.filterTabs.innerHTML = "";
       for (const filter of [
         { id: "up", label: `5%以上上昇 (${upCount})` },
@@ -241,6 +258,9 @@ HTML = """<!doctype html>
       else {
         const portfolio = (payload.portfolios || []).find((item) => String(item.id) === String(currentPortfolioId));
         els.sourceText.textContent = portfolio ? `${portfolio.name} / ${portfolio.count_text}` : "";
+      }
+      if (selectedRows().some((item) => (item.error || item.warning) && rateClass(item))) {
+        els.sourceText.textContent += " / 確認済み終値を含む（前回取得値・履歴値）";
       }
       els.rows.innerHTML = "";
       for (const item of items) {
