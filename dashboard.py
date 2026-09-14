@@ -454,7 +454,7 @@ INDEX_HTML = """<!doctype html>
           tr.children[4].className = rateClass;
           tr.children[5].textContent = item.rate || item.error || '-';
           tr.children[5].className = rateClass;
-          tr.children[6].textContent = item.error ? '取得失敗（前回値）' : (item.warning || judgeText(rateClass));
+          tr.children[6].textContent = item.error ? '前回値' : (item.warning || judgeText(rateClass));
           tr.children[6].className = item.error ? 'alert' : rateClass || 'muted';
         } else if (item.error) {
           tr.children[3].textContent = '取得失敗';
