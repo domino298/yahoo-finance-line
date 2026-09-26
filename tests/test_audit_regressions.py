@@ -143,6 +143,42 @@ class PriceAuditTest(unittest.TestCase):
 
 
 class BrowserLogicAuditTest(unittest.TestCase):
+    def test_recovered_portfolio_survives_old_cache_and_keeps_quotes(self):
+        result = self.run_browser('''(() => {
+          payload.portfolios = [{id:12,name:"金04",symbols:[{symbol:"3003.T",price:123,previous_close:120}]}];
+          payload.portfolio_fetched_at = "2026-09-17T04:46:52Z";
+          const status = mergeYahooPortfolioSnapshot({fetched_at:"2026-09-17T04:46:52Z",sync_status:"cached",
+            sync_error:"Yahooポートフォリオ HTTP 429",portfolios:[{id:12,name:"金04",symbols:[]}]});
+          const recovered = payload.portfolios.find(p=>p.id===14);
+          return {ids:payload.portfolios.map(p=>p.id),count:recovered.symbols.length,
+            price:recovered.symbols[0].price,label:portfolioSyncLabel(status)};
+        })()''')
+        self.assertEqual(result["ids"], [12, 14])
+        self.assertEqual(result["count"], 9)
+        self.assertEqual(result["price"], 123)
+        self.assertIn("アクセス制限中", result["label"])
+
+    def test_newer_successful_sync_supersedes_recovery_including_deletion(self):
+        result = self.run_browser('''(() => {
+          payload.portfolio_fetched_at = "2026-09-17T04:46:52Z";
+          mergeYahooPortfolioSnapshot({fetched_at:"2026-09-27T01:00:00Z",sync_status:"live",
+            portfolios:[{id:12,name:"金04",symbols:[]},{id:14,name:"金05改",symbols:[{symbol:"3003.T",name:"new"}]}]});
+          const updated = payload.portfolios.find(p=>p.id===14);
+          mergeYahooPortfolioSnapshot({fetched_at:"2026-09-27T02:00:00Z",sync_status:"live",
+            portfolios:[{id:12,name:"金04",symbols:[]}]});
+          return {name:updated.name,count:updated.symbols.length,deleted:!payload.portfolios.some(p=>p.id===14)};
+        })()''')
+        self.assertEqual(result, {"name": "金05改", "count": 1, "deleted": True})
+
+    def test_older_cache_cannot_undo_newer_list(self):
+        result = self.run_browser('''(() => {
+          payload.portfolio_fetched_at = "2026-09-27T02:00:00Z";
+          payload.portfolios = [{id:15,name:"new",symbols:[]}];
+          mergeYahooPortfolioSnapshot({fetched_at:"2026-09-17T04:46:52Z",sync_status:"cached",portfolios:[{id:12,symbols:[]}]});
+          return payload.portfolios.map(p=>p.id);
+        })()''')
+        self.assertEqual(result, [15])
+
     def test_closing_counts_survive_refresh_failure_only_outside_trading_hours(self):
         scenarios = [
             ("2026-09-11T10:00:00Z", 105, "offline", "", "up"),
@@ -225,6 +261,7 @@ return {rejected,percent:normalizeQuote({price:105,previous_close:100,change_per
         result = self.run_browser('''(async()=>{
 window.setTimeout=(fn)=>{fn();return 0;};
 payload.portfolios[0].symbols=Array.from({length:80},(_,i)=>({symbol:`${1000+i}.T`,price:100}));
+payload.portfolios=payload.portfolios.slice(0,1);
 let attempts=0;fetchJsonp=async()=>{attempts++;throw new Error("offline");};
 const result=await refreshLiveQuotes();return {attempts,failed:result.failed,total:result.total};})()''')
         self.assertEqual(result, {"attempts": 3, "failed": 80, "total": 80})
@@ -233,6 +270,7 @@ const result=await refreshLiveQuotes();return {attempts,failed:result.failed,tot
         result = self.run_browser('''(async()=>{
 window.setTimeout=(fn)=>{fn();return 0;};
 payload.portfolios[0].symbols=Array.from({length:300},(_,i)=>({symbol:`${1000+i}.T`,price:100}));
+payload.portfolios=payload.portfolios.slice(0,1);
 let active=0,peak=0;const seen=[];
 fetchJsonp=async(url,params)=>{active++;peak=Math.max(peak,active);await Promise.resolve();
 const quotes={};for(const symbol of params.symbols.split(",")){seen.push(symbol);quotes[symbol]={price:105,previous_close:100,quote_time:"2026-09-11T06:30:00Z"};}
