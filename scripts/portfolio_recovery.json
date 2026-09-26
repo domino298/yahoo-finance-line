@@ -1,0 +1,22 @@
+{
+  "verified_at": "2026-09-26T16:39:00Z",
+  "source": "Yahoo Finance Japan signed-in portfolio page, portfolioId=14",
+  "portfolios": [{
+    "id": 14,
+    "name": "金05",
+    "after_id": 12,
+    "url": "https://finance.yahoo.co.jp/portfolio/detail?portfolioId=14",
+    "count_text": "9件",
+    "symbols": [
+      {"symbol": "3003.T", "name": "ヒューリック(株)"},
+      {"symbol": "4732.T", "name": "(株)ユー・エス・エス"},
+      {"symbol": "8766.T", "name": "東京海上ホールディングス(株)"},
+      {"symbol": "7164.T", "name": "全国保証(株)"},
+      {"symbol": "9989.T", "name": "(株)サンドラッグ"},
+      {"symbol": "2502.T", "name": "アサヒグループホールディングス(株)"},
+      {"symbol": "4204.T", "name": "積水化学工業(株)"},
+      {"symbol": "1928.T", "name": "積水ハウス(株)"},
+      {"symbol": "8804.T", "name": "東京建物(株)"}
+    ]
+  }]
+}

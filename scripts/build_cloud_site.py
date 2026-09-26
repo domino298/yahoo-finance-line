@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 
@@ -158,6 +159,7 @@ HTML = """<!doctype html>
     let currentFilter = "portfolio";
     let currentPortfolioId = null;
     const LIVE_PROXY_URL = "https://script.google.com/macros/s/AKfycbyy0_1l7yyb_OGl3yvRO5cVow5fueYN92QPUKnIT7RUycFQUYF-OTTy0QOp_uSQ-J0TOA/exec";
+    const PORTFOLIO_RECOVERY = __PORTFOLIO_RECOVERY__;
     const els = {
       app: document.querySelector("#app"),
       refreshButton: document.querySelector("#refreshButton"),
@@ -174,7 +176,31 @@ HTML = """<!doctype html>
     async function loadPublishedData() {
       const response = await fetch(`data.json?v=${Date.now()}`, { cache: "no-store" });
       if (!response.ok) throw new Error(`公開データ取得失敗: ${response.status}`);
-      return response.json();
+      const data = await response.json();
+      data.portfolios = recoverPortfolioList(data.portfolios || [], data.portfolio_fetched_at);
+      return data;
+    }
+    function recoverPortfolioList(portfolios, fetchedAt) {
+      if (Date.parse(fetchedAt) >= Date.parse(PORTFOLIO_RECOVERY.verified_at)) return portfolios;
+      const result = portfolios.slice();
+      const quotes = new Map(portfolios.flatMap(p => (p.symbols || []).map(item => [item.symbol, item])));
+      for (const recovered of PORTFOLIO_RECOVERY.portfolios) {
+        const replacement = { ...recovered, symbols: recovered.symbols.map(item => ({
+          ...quotes.get(item.symbol), ...item
+        })) };
+        const index = result.findIndex(p => String(p.id) === String(recovered.id));
+        if (index >= 0) result[index] = replacement;
+        else {
+          const after = result.findIndex(p => String(p.id) === String(recovered.after_id));
+          result.splice(after >= 0 ? after + 1 : result.length, 0, replacement);
+        }
+      }
+      return result;
+    }
+    function portfolioSyncLabel(result) {
+      if (result?.syncStatus === "live") return "Yahoo同期済み";
+      if (/429/.test(result?.syncError || "")) return "Yahoo一覧: アクセス制限中（保存済み一覧）";
+      return "Yahoo一覧: 同期未完了（保存済み一覧）";
     }
     function rateNumber(item) {
       try { return normalizeQuote(item).change_percent; }
@@ -296,6 +322,11 @@ HTML = """<!doctype html>
       return symbols;
     }
     function mergeYahooPortfolioSnapshot(snapshot) {
+      const incomingTime = Date.parse(snapshot.fetched_at);
+      const currentTime = Date.parse(payload.portfolio_fetched_at);
+      if (Number.isFinite(currentTime) && (!Number.isFinite(incomingTime) || incomingTime < currentTime)) {
+        return { addedSymbols: [], added: 0, removed: 0, syncStatus: "cached", syncError: snapshot.sync_error || "古い同期データ" };
+      }
       const existingBySymbol = new Map();
       for (const portfolio of payload.portfolios || []) {
         for (const item of portfolio.symbols || []) {
@@ -305,7 +336,7 @@ HTML = """<!doctype html>
       const previousSymbols = new Set(existingBySymbol.keys());
       const nextSymbols = new Set();
       const addedSymbols = [];
-      payload.portfolios = (snapshot.portfolios || []).map((portfolio) => {
+      payload.portfolios = recoverPortfolioList(snapshot.portfolios || [], snapshot.fetched_at).map((portfolio) => {
         const symbols = (portfolio.symbols || []).map((item) => {
           const base = existingBySymbol.get(item.symbol) || {
             price: "", previous_close: "", change: "", rate: "", change_percent: null,
@@ -519,12 +550,12 @@ HTML = """<!doctype html>
       const previousPortfolioId = currentPortfolioId;
       els.refreshButton.disabled = true;
       els.statusText.textContent = LIVE_PROXY_URL ? "Yahoo銘柄・タブ同期中" : "公開済み最新データを確認中";
+      let portfolioSync = null;
       try {
-        let portfolioSync = null;
         try {
           portfolioSync = await syncYahooPortfolioList();
         } catch (syncError) {
-          portfolioSync = null;
+          portfolioSync = { syncStatus: "unavailable", syncError: String(syncError) };
         }
         els.statusText.textContent = "リアルタイム更新中";
         const liveResult = await refreshLiveQuotes();
@@ -536,9 +567,7 @@ HTML = """<!doctype html>
         currentPortfolioId = (payload.portfolios || []).some((portfolio) => String(portfolio.id) === String(previousPortfolioId))
           ? previousPortfolioId
           : (payload.portfolios?.[0]?.id ?? null);
-        const syncText = portfolioSync
-          ? `Yahoo${portfolioSync.syncStatus === "live" ? "同期済み" : "前回同期"} / `
-          : "Yahoo同期失敗 / ";
+        const syncText = `${portfolioSyncLabel(portfolioSync)} / `;
         els.statusText.textContent = `${syncText}株価時点（日本株）: ${formatDateTime(liveResult.quote_time || payload.quote_time)} / 更新: ${formatDateTime(payload.generated_at)} / OK ${liveResult.success} / 失敗 ${liveResult.failed}`;
         render();
       } catch (error) {
@@ -550,7 +579,7 @@ HTML = """<!doctype html>
             ? previousPortfolioId
             : (payload.portfolios?.[0]?.id ?? null);
           els.statusText.textContent = LIVE_PROXY_URL
-            ? `取得失敗 / 前回の株価時点: ${formatDateTime(payload.quote_time) || "不明"} / 更新試行: ${formatDateTime(new Date())}`
+            ? `${portfolioSyncLabel(portfolioSync)} / 取得失敗 / 前回の株価時点: ${formatDateTime(payload.quote_time) || "不明"} / 更新試行: ${formatDateTime(new Date())}`
             : `公開済みデータ: ${formatDateTime(payload.quote_time || payload.generated_at)}`;
           render();
         } catch (fallbackError) {
@@ -584,6 +613,11 @@ HTML = """<!doctype html>
 </body>
 </html>
 """
+
+HTML = HTML.replace("__PORTFOLIO_RECOVERY__", json.dumps(
+    json.loads((ROOT / "scripts" / "portfolio_recovery.json").read_text(encoding="utf-8")),
+    ensure_ascii=True,
+))
 
 
 def main() -> None:
