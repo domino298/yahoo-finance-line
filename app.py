@@ -477,13 +477,13 @@ def fetch_quote_from_chart(symbol: str, name: Optional[str] = None) -> Quote:
 def fetch_quote(symbol: str, name: Optional[str] = None) -> Quote:
     if is_japan_market_symbol(symbol):
         try:
-            return fetch_quote_from_chart(symbol, name)
+            quote = fetch_quote_from_yahoo_japan(symbol, name)
+            if quote.market_time is None:
+                raise RuntimeError("Yahoo Japan quote date is unknown")
+            return quote
         except Exception:
             try:
-                quote = fetch_quote_from_yahoo_japan(symbol, name)
-                if quote.market_time is None:
-                    raise RuntimeError("Yahoo Japan quote date is unknown")
-                return quote
+                return fetch_quote_from_chart(symbol, name)
             except Exception:
                 return fetch_quote_from_yahoo_japan_history(symbol, name)
     if is_yahoo_japan_quote_symbol(symbol):
