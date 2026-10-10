@@ -300,7 +300,8 @@ function fetchQuotes(symbols) {
     }
   }
 
-  const sessionAlignedQuotes = fetchQuotesFromDailyChart(japanSymbols.filter(isJapanMarketSymbol));
+  const sessionAlignedQuotes = fetchQuotesFromDailyChart(japanSymbols.filter(symbol =>
+    isJapanMarketSymbol(symbol) && (!quotes[symbol] || quotes[symbol].error)));
   for (const symbol of Object.keys(sessionAlignedQuotes)) {
     if (!sessionAlignedQuotes[symbol].error) quotes[symbol] = sessionAlignedQuotes[symbol];
   }
@@ -335,12 +336,12 @@ function fetchQuotes(symbols) {
 function fetchQuote(symbol) {
   if (isJapanMarketSymbol(symbol)) {
     try {
-      return fetchQuoteFromDailyChart(symbol);
+      const quote = fetchQuoteFromYahooJapan(symbol);
+      if (!quote.quote_time) throw new Error("株価日付を確認できません");
+      return quote;
     } catch (error) {
       try {
-        const quote = fetchQuoteFromYahooJapan(symbol);
-        if (!quote.quote_time) throw new Error("株価日付を確認できません");
-        return quote;
+        return fetchQuoteFromDailyChart(symbol);
       } catch (pageError) {
         return fetchQuoteFromYahooJapanHistory(symbol);
       }
