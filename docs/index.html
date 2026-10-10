@@ -285,7 +285,15 @@
         for (const [index, value] of cells.entries()) {
           const td = document.createElement("td");
           td.textContent = value;
-          if (index === 3) td.title = `株価時点: ${formatDateTime(item.quote_time) || "不明"}`;
+          if (index === 3) {
+            td.title = `株価時点: ${formatDateTime(item.quote_time) || "不明"}`;
+            const stamp = document.createElement("small");
+            stamp.textContent = `${item.error || item.warning ? "参考値 / " : ""}${formatDateTime(item.quote_time) || "時点不明"}`;
+            stamp.style.display = "block";
+            stamp.style.fontSize = "10px";
+            stamp.style.whiteSpace = "normal";
+            td.appendChild(stamp);
+          }
           if (index === 0) td.className = "symbol";
           if ([4, 5, 6].includes(index)) td.className = kind || (item.error && index >= 5 ? "error" : "muted");
           tr.appendChild(td);
@@ -432,6 +440,13 @@
       });
     }
     async function refreshLiveQuotes(symbolsOverride) {
+      const existingTimes = new Map();
+      for (const portfolio of payload.portfolios || []) {
+        for (const item of portfolio.symbols || []) {
+          const timestamp = Date.parse(item.quote_time);
+          if (Number.isFinite(timestamp)) existingTimes.set(item.symbol, Math.max(existingTimes.get(item.symbol) || 0, timestamp));
+        }
+      }
       if (!LIVE_PROXY_URL) throw new Error("リアルタイム中継未設定");
       const symbols = symbolsOverride || uniqueSymbols();
       if (!symbols.length) {
@@ -467,6 +482,9 @@
           if (!quote.error) {
             try {
               quote = normalizeQuote(quote);
+              const incomingTime = Date.parse(quote.quote_time);
+              if (!Number.isFinite(incomingTime) || incomingTime > Date.now() + 60000) throw new Error("株価時点を確認できません");
+              if (incomingTime < (existingTimes.get(item.symbol) || 0)) throw new Error("古い株価のため更新しませんでした");
             } catch (error) {
               quote = { error: error.message || "計算失敗" };
             }
