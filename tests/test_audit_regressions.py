@@ -28,6 +28,22 @@ def chart(state=None):
 
 
 class PriceAuditTest(unittest.TestCase):
+    def test_japan_page_takes_priority_over_chart(self):
+        expected = Quote("7203.T", "X", 105, 100, 5, "JPY", ts("2026-09-10T06:30:00"))
+        from app import fetch_quote
+        with patch("app.fetch_quote_from_yahoo_japan", return_value=expected), patch("app.fetch_quote_from_chart") as chart_fetch:
+            self.assertEqual(fetch_quote("7203.T"), expected)
+            chart_fetch.assert_not_called()
+        result = self.js('''(() => {
+          safeFetchAll=()=>[{getResponseCode:()=>200,getContentText:()=>"page"}];
+          parseYahooJapanQuote=()=>({price:105,previous_close:100,quote_time:"2026-09-10T06:30:00Z"});
+          let requested=[];fetchQuotesFromDailyChart=symbols=>{requested=symbols;return {};};
+          fetchQuotesFromQuoteApi=()=>({});
+          return {quote:fetchQuotes(["7203.T"])["7203.T"],requested};
+        })()''')
+        self.assertEqual(result["quote"]["price"], 105)
+        self.assertEqual(result["requested"], [])
+
     def js(self, expression):
         return gas_tests.GoogleAppsScriptQuoteParsingTest().run_javascript(expression)
 
@@ -143,6 +159,16 @@ class PriceAuditTest(unittest.TestCase):
 
 
 class BrowserLogicAuditTest(unittest.TestCase):
+    def test_older_or_undated_response_cannot_overwrite_current_value(self):
+        for timestamp in ["2026-09-08T06:30:00Z", "", "invalid"]:
+            result = self.run_browser('''(async()=>{
+              payload.portfolios=[{id:1,symbols:[{symbol:"7203.T",price:106,previous_close:100,quote_time:"2026-09-09T06:30:00Z"}]}];
+              fetchJsonp=async()=>({quotes:{"7203.T":{price:99,previous_close:98,quote_time:TIMESTAMP}}});
+              const result=await refreshLiveQuotes();
+              return {price:payload.portfolios[0].symbols[0].price,success:result.success,failed:result.failed};
+            })()'''.replace("TIMESTAMP", json.dumps(timestamp)))
+            self.assertEqual(result, {"price":106,"success":0,"failed":1})
+
     def test_recovered_portfolio_survives_old_cache_and_keeps_quotes(self):
         result = self.run_browser('''(() => {
           payload.portfolios = [{id:12,name:"金04",symbols:[{symbol:"3003.T",price:123,previous_close:120}]}];
