@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T11:57:56.184722+00:00",
+  "generated_at": "2026-10-12T05:05:11.401192+00:00",
   "quote_time": "2026-10-09T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -287,7 +287,7 @@
           "rate": "-0.63%",
           "change_percent": -0.6269592476489028,
           "currency": "JPY",
-          "quote_time": "2026-10-09T06:21:35+00:00",
+          "quote_time": "2026-10-09T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -472,7 +472,7 @@
           "quote_time": "",
           "alert_direction": null,
           "warning": "",
-          "error": "Missing Yahoo Japan history data for 4748.T"
+          "error": "HTTP 500 from https://finance.yahoo.co.jp/quote/4748.T/history: <HTML>\n<HEAD>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\n\n<!-- Title -->\n<TITLE>\nYahoo! JAPAN - ご覧になろうとしているページは現在表示できません。\n</TITLE>\n<!---------------->\n\n<style>\n* {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  line-height: 1.7em;\n}\nbody {\n  font-family: \"Arial\",\"Helvetica\""
         },
         {
           "symbol": "6381.T",
@@ -525,7 +525,7 @@
           "rate": "-0.06%",
           "change_percent": -0.05714285714285715,
           "currency": "JPY",
-          "quote_time": "2026-10-09T06:10:09+00:00",
+          "quote_time": "2026-10-09T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -2370,13 +2370,13 @@
         {
           "symbol": "8931224C",
           "name": "SBI・S・米国高配当株式ファンド(年4回決算型)",
-          "price": 12130.0,
-          "previous_close": 12242.0,
-          "change": "-112.00",
-          "rate": "-0.91%",
-          "change_percent": -0.9148831890214016,
+          "price": 12332.0,
+          "previous_close": 12130.0,
+          "change": "+202.00",
+          "rate": "+1.67%",
+          "change_percent": 1.6652926628194558,
           "currency": "JPY",
-          "quote_time": "2026-10-08T06:30:00+00:00",
+          "quote_time": "2026-10-09T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -2925,16 +2925,16 @@
         {
           "symbol": "4659.T",
           "name": "(株)エイジス",
-          "price": 4420.0,
-          "previous_close": 4420.0,
-          "change": "+0.00",
-          "rate": "+0.00%",
-          "change_percent": 0.0,
-          "currency": "JPY",
-          "quote_time": "2026-06-18T06:30:00+00:00",
+          "price": "",
+          "previous_close": "",
+          "change": "",
+          "rate": "",
+          "change_percent": null,
+          "currency": "",
+          "quote_time": "",
           "alert_direction": null,
-          "warning": "履歴終値（現在値の取得失敗時の参考値）",
-          "error": ""
+          "warning": "",
+          "error": "HTTP 500 from https://finance.yahoo.co.jp/quote/4659.T/history: <HTML>\n<HEAD>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\n\n<!-- Title -->\n<TITLE>\nYahoo! JAPAN - ご覧になろうとしているページは現在表示できません。\n</TITLE>\n<!---------------->\n\n<style>\n* {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  line-height: 1.7em;\n}\nbody {\n  font-family: \"Arial\",\"Helvetica\""
         },
         {
           "symbol": "3333.T",
@@ -3172,16 +3172,16 @@
         {
           "symbol": "3924.T",
           "name": "(株)ランドコンピュータ",
-          "price": 915.0,
-          "previous_close": 909.0,
-          "change": "+6.00",
-          "rate": "+0.66%",
-          "change_percent": 0.6600660066006601,
-          "currency": "JPY",
-          "quote_time": "2026-03-27T06:30:00+00:00",
+          "price": "",
+          "previous_close": "",
+          "change": "",
+          "rate": "",
+          "change_percent": null,
+          "currency": "",
+          "quote_time": "",
           "alert_direction": null,
-          "warning": "履歴終値（現在値の取得失敗時の参考値）",
-          "error": ""
+          "warning": "",
+          "error": "HTTP 500 from https://finance.yahoo.co.jp/quote/3924.T/history: <HTML>\n<HEAD>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\n\n<!-- Title -->\n<TITLE>\nYahoo! JAPAN - ご覧になろうとしているページは現在表示できません。\n</TITLE>\n<!---------------->\n\n<style>\n* {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  line-height: 1.7em;\n}\nbody {\n  font-family: \"Arial\",\"Helvetica\""
         },
         {
           "symbol": "5184.T",
@@ -3326,16 +3326,16 @@
         {
           "symbol": "4171.T",
           "name": "(株)グローバルインフォメーション",
-          "price": 1665.0,
-          "previous_close": 1665.0,
-          "change": "+0.00",
-          "rate": "+0.00%",
-          "change_percent": 0.0,
-          "currency": "JPY",
-          "quote_time": "2026-08-12T06:30:00+00:00",
+          "price": "",
+          "previous_close": "",
+          "change": "",
+          "rate": "",
+          "change_percent": null,
+          "currency": "",
+          "quote_time": "",
           "alert_direction": null,
-          "warning": "履歴終値（現在値の取得失敗時の参考値）",
-          "error": ""
+          "warning": "",
+          "error": "HTTP 500 from https://finance.yahoo.co.jp/quote/4171.T/history: <HTML>\n<HEAD>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\n\n<!-- Title -->\n<TITLE>\nYahoo! JAPAN - ご覧になろうとしているページは現在表示できません。\n</TITLE>\n<!---------------->\n\n<style>\n* {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  line-height: 1.7em;\n}\nbody {\n  font-family: \"Arial\",\"Helvetica\""
         },
         {
           "symbol": "6113.T",
@@ -3382,16 +3382,16 @@
         {
           "symbol": "4171.T",
           "name": "(株)グローバルインフォメーション",
-          "price": 1665.0,
-          "previous_close": 1665.0,
-          "change": "+0.00",
-          "rate": "+0.00%",
-          "change_percent": 0.0,
-          "currency": "JPY",
-          "quote_time": "2026-08-12T06:30:00+00:00",
+          "price": "",
+          "previous_close": "",
+          "change": "",
+          "rate": "",
+          "change_percent": null,
+          "currency": "",
+          "quote_time": "",
           "alert_direction": null,
-          "warning": "履歴終値（現在値の取得失敗時の参考値）",
-          "error": ""
+          "warning": "",
+          "error": "HTTP 500 from https://finance.yahoo.co.jp/quote/4171.T/history: <HTML>\n<HEAD>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\n\n<!-- Title -->\n<TITLE>\nYahoo! JAPAN - ご覧になろうとしているページは現在表示できません。\n</TITLE>\n<!---------------->\n\n<style>\n* {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  line-height: 1.7em;\n}\nbody {\n  font-family: \"Arial\",\"Helvetica\""
         },
         {
           "symbol": "9163.T",
@@ -3500,7 +3500,7 @@
           "rate": "-1.31%",
           "change_percent": -1.3059701492537312,
           "currency": "JPY",
-          "quote_time": "2026-10-09T06:03:00+00:00",
+          "quote_time": "2026-10-09T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -4408,16 +4408,16 @@
         {
           "symbol": "5903.T",
           "name": "ＳＨＩＮＰＯ(株)",
-          "price": 1685.0,
-          "previous_close": 1685.0,
-          "change": "+0.00",
-          "rate": "+0.00%",
-          "change_percent": 0.0,
-          "currency": "JPY",
-          "quote_time": "2026-07-21T06:30:00+00:00",
+          "price": "",
+          "previous_close": "",
+          "change": "",
+          "rate": "",
+          "change_percent": null,
+          "currency": "",
+          "quote_time": "",
           "alert_direction": null,
-          "warning": "履歴終値（現在値の取得失敗時の参考値）",
-          "error": ""
+          "warning": "",
+          "error": "HTTP 500 from https://finance.yahoo.co.jp/quote/5903.T/history: <HTML>\n<HEAD>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\n\n<!-- Title -->\n<TITLE>\nYahoo! JAPAN - ご覧になろうとしているページは現在表示できません。\n</TITLE>\n<!---------------->\n\n<style>\n* {\n  margin: 0;\n  padding: 0;\n  font-size: 16px;\n  line-height: 1.7em;\n}\nbody {\n  font-family: \"Arial\",\"Helvetica\""
         },
         {
           "symbol": "8059.T",
@@ -5737,14 +5737,14 @@
         {
           "symbol": "KXIAY",
           "name": "キオクシアホールディングス(株)",
-          "price": 10.77,
-          "previous_close": 34.85,
-          "change": "-24.08",
-          "rate": "-69.10%",
-          "change_percent": -69.09612625538021,
+          "price": 10.86,
+          "previous_close": 10.77,
+          "change": "+0.09",
+          "rate": "+0.84%",
+          "change_percent": 0.8356545961002773,
           "currency": "USD",
-          "quote_time": "2026-10-08T20:00:00+00:00",
-          "alert_direction": "down",
+          "quote_time": "2026-10-09T20:00:00+00:00",
+          "alert_direction": null,
           "warning": "",
           "error": ""
         }
