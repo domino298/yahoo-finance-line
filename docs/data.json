@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T08:36:44.790438+00:00",
+  "generated_at": "2026-10-16T13:36:47.536013+00:00",
   "quote_time": "2026-10-16T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -1537,7 +1537,7 @@
           "rate": "+1.52%",
           "change_percent": 1.520912547528517,
           "currency": "JPY",
-          "quote_time": "2026-10-16T06:10:00+00:00",
+          "quote_time": "2026-10-16T06:10:02+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -4125,7 +4125,7 @@
           "rate": "+0.00%",
           "change_percent": 0.0,
           "currency": "JPY",
-          "quote_time": "2026-10-16T02:21:17+00:00",
+          "quote_time": "2026-10-16T02:21:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
