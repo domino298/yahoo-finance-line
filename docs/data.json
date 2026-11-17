@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T07:10:12.514686+00:00",
+  "generated_at": "2026-11-17T16:58:52.897046+00:00",
   "quote_time": "2026-11-17T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -287,7 +287,7 @@
           "rate": "-0.06%",
           "change_percent": -0.06207324643078833,
           "currency": "JPY",
-          "quote_time": "2026-11-17T01:19:00+00:00",
+          "quote_time": "2026-11-17T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -2370,13 +2370,13 @@
         {
           "symbol": "8931224C",
           "name": "SBI・S・米国高配当株式ファンド(年4回決算型)",
-          "price": 13571.0,
-          "previous_close": 13504.0,
-          "change": "+67.00",
-          "rate": "+0.50%",
-          "change_percent": 0.49614928909952605,
+          "price": 13442.0,
+          "previous_close": 13571.0,
+          "change": "-129.00",
+          "rate": "-0.95%",
+          "change_percent": -0.9505563333578956,
           "currency": "JPY",
-          "quote_time": "2026-11-16T06:30:00+00:00",
+          "quote_time": "2026-11-17T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -3500,7 +3500,7 @@
           "rate": "+0.78%",
           "change_percent": 0.776914539400666,
           "currency": "JPY",
-          "quote_time": "2026-11-17T06:24:00+00:00",
+          "quote_time": "2026-11-17T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5435,7 +5435,7 @@
           "rate": "+0.00%",
           "change_percent": 0.0,
           "currency": "JPY",
-          "quote_time": "2026-11-17T06:13:00+00:00",
+          "quote_time": "2026-11-17T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5603,7 +5603,7 @@
           "rate": "-0.79%",
           "change_percent": -0.7898894154818324,
           "currency": "JPY",
-          "quote_time": "2026-11-17T04:47:00+00:00",
+          "quote_time": "2026-11-17T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5737,13 +5737,13 @@
         {
           "symbol": "KXIAY",
           "name": "キオクシアホールディングス(株)",
-          "price": 5.09,
-          "previous_close": 5.53,
-          "change": "-0.44",
-          "rate": "-7.96%",
-          "change_percent": -7.95660036166366,
+          "price": 4.81,
+          "previous_close": 5.07,
+          "change": "-0.26",
+          "rate": "-5.13%",
+          "change_percent": -5.128205128205141,
           "currency": "USD",
-          "quote_time": "2026-11-16T21:00:00+00:00",
+          "quote_time": "2026-11-17T16:41:00+00:00",
           "alert_direction": "down",
           "warning": "",
           "error": ""
