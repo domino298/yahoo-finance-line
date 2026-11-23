@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T06:33:26.553835+00:00",
+  "generated_at": "2026-11-23T18:44:59.316350+00:00",
   "quote_time": "2026-11-20T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -5737,14 +5737,14 @@
         {
           "symbol": "KXIAY",
           "name": "キオクシアホールディングス(株)",
-          "price": 3.97,
-          "previous_close": 4.82,
-          "change": "-0.85",
-          "rate": "-17.63%",
-          "change_percent": -17.634854771784234,
+          "price": 5.0,
+          "previous_close": 3.99,
+          "change": "+1.01",
+          "rate": "+25.31%",
+          "change_percent": 25.313283208020042,
           "currency": "USD",
-          "quote_time": "2026-11-20T21:00:00+00:00",
-          "alert_direction": "down",
+          "quote_time": "2026-11-23T18:28:52+00:00",
+          "alert_direction": "up",
           "warning": "",
           "error": ""
         }
