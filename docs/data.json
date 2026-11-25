@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T07:41:30.021313+00:00",
+  "generated_at": "2026-11-25T18:15:58.190558+00:00",
   "quote_time": "2026-11-25T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -1229,7 +1229,7 @@
           "rate": "+0.07%",
           "change_percent": 0.07137758743754462,
           "currency": "JPY",
-          "quote_time": "2026-11-25T06:24:00+00:00",
+          "quote_time": "2026-11-25T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -2370,13 +2370,13 @@
         {
           "symbol": "8931224C",
           "name": "SBI・S・米国高配当株式ファンド(年4回決算型)",
-          "price": 12850.0,
-          "previous_close": 12826.0,
-          "change": "+24.00",
-          "rate": "+0.19%",
-          "change_percent": 0.18711991267737407,
+          "price": 13069.0,
+          "previous_close": 12850.0,
+          "change": "+219.00",
+          "rate": "+1.70%",
+          "change_percent": 1.7042801556420233,
           "currency": "JPY",
-          "quote_time": "2026-11-24T06:30:00+00:00",
+          "quote_time": "2026-11-25T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -3724,7 +3724,7 @@
           "rate": "+0.07%",
           "change_percent": 0.07137758743754462,
           "currency": "JPY",
-          "quote_time": "2026-11-25T06:24:00+00:00",
+          "quote_time": "2026-11-25T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5435,7 +5435,7 @@
           "rate": "-0.04%",
           "change_percent": -0.03779289493575208,
           "currency": "JPY",
-          "quote_time": "2026-11-25T05:59:00+00:00",
+          "quote_time": "2026-11-25T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5737,13 +5737,13 @@
         {
           "symbol": "KXIAY",
           "name": "キオクシアホールディングス(株)",
-          "price": 4.5,
-          "previous_close": 5.05,
-          "change": "-0.55",
-          "rate": "-10.89%",
-          "change_percent": -10.891089108910888,
+          "price": 4.25,
+          "previous_close": 4.51,
+          "change": "-0.26",
+          "rate": "-5.76%",
+          "change_percent": -5.764966740576492,
           "currency": "USD",
-          "quote_time": "2026-11-24T21:00:00+00:00",
+          "quote_time": "2026-11-25T18:00:26+00:00",
           "alert_direction": "down",
           "warning": "",
           "error": ""
