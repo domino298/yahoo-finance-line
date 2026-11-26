@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T07:30:48.867791+00:00",
+  "generated_at": "2026-11-26T17:56:52.629170+00:00",
   "quote_time": "2026-11-26T06:30:00+00:00",
   "default_up_threshold_percent": 5.0,
   "default_down_threshold_percent": -5.0,
@@ -287,7 +287,7 @@
           "rate": "+0.00%",
           "change_percent": 0.0,
           "currency": "JPY",
-          "quote_time": "2026-11-26T06:24:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -427,7 +427,7 @@
           "rate": "-0.46%",
           "change_percent": -0.45871559633027525,
           "currency": "JPY",
-          "quote_time": "2026-11-26T06:21:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -525,7 +525,7 @@
           "rate": "+0.12%",
           "change_percent": 0.11648223645894001,
           "currency": "JPY",
-          "quote_time": "2026-11-26T04:44:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -1537,7 +1537,7 @@
           "rate": "+2.45%",
           "change_percent": 2.44874715261959,
           "currency": "JPY",
-          "quote_time": "2026-11-26T06:01:00+00:00",
+          "quote_time": "2026-11-26T06:01:50+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -1975,7 +1975,7 @@
           "rate": "-0.46%",
           "change_percent": -0.45871559633027525,
           "currency": "JPY",
-          "quote_time": "2026-11-26T06:21:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -2370,13 +2370,13 @@
         {
           "symbol": "8931224C",
           "name": "SBI・S・米国高配当株式ファンド(年4回決算型)",
-          "price": 13069.0,
-          "previous_close": 12850.0,
-          "change": "+219.00",
-          "rate": "+1.70%",
-          "change_percent": 1.7042801556420233,
+          "price": 13194.0,
+          "previous_close": 13069.0,
+          "change": "+125.00",
+          "rate": "+0.96%",
+          "change_percent": 0.9564618563011708,
           "currency": "JPY",
-          "quote_time": "2026-11-25T06:30:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5435,7 +5435,7 @@
           "rate": "+0.00%",
           "change_percent": 0.0,
           "currency": "JPY",
-          "quote_time": "2026-11-26T05:52:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
@@ -5575,7 +5575,7 @@
           "rate": "+0.42%",
           "change_percent": 0.4158004158004158,
           "currency": "JPY",
-          "quote_time": "2026-11-26T06:22:00+00:00",
+          "quote_time": "2026-11-26T06:30:00+00:00",
           "alert_direction": null,
           "warning": "",
           "error": ""
